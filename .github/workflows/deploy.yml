@@ -5,8 +5,8 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-# Fix: Force the action runner to use Node 24
 env:
+  # Ensures all JS-based actions run on the Node 24 engine
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # v4/v5 are both fine with the ENV flag above
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22 # Your code still builds on 22
+          node-version: 24 # Aligned with the runner engine
           cache: 'npm'
 
       - name: Install dependencies
