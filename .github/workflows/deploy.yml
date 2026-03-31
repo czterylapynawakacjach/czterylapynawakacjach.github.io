@@ -5,6 +5,10 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+# REQUIRED: This silences warnings for actions that haven't hit v5 yet
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   pages: write
@@ -15,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5 # v5 natively supports Node 24 runners
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v5 # v5 natively supports Node 24 runners
+        uses: actions/setup-node@v5
         with:
           node-version: 24 
           cache: 'npm'
@@ -33,7 +37,8 @@ jobs:
         run: touch dist/.nojekyll 
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3 # v3 remains standard for Pages logic
+        # v3 is the current stable for Pages, but it triggers the warning without the ENV flag
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
@@ -46,4 +51,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5 # Matches the v5 logic for the runner
+        uses: actions/deploy-pages@v4 # Some regions may have v5, but v4 is the standard
