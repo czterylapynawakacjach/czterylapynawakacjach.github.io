@@ -49,11 +49,11 @@ export const ui = {
     'contact.form.submit': 'Wyślij Wiadomość',
     // V4 Terms
     'v4.nav.home': 'Zagroda',
-    'v4.nav.calendar': 'Kalendarz Pszczeli',
+    'v4.nav.calendar': 'Kalendarz',
     'v4.nav.workshops': 'Warsztaty',
     'v4.nav.pantry': 'Spiżarnia',
     'v4.nav.about': 'O Pszczelarzu',
-    'v4.nav.beeops': 'Centrum Dowodzenia',
+    'v4.nav.beeops': 'Wylotek',
     'v4.site.title': 'Złota Pasieka',
     'v4.site.description': 'Edukacyjna zagroda pszczelarska - poczuj rytm natury.',
     'v4.hive.temp': 'Temp. w ulu',
