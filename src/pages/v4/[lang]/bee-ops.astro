@@ -1,0 +1,49 @@
+---
+import Layout from '../../../layouts/v4/Layout.astro';
+import BeeOpsGauges from '../../../components/v4/BeeOpsGauges.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={t('v4.nav.beeops')}>
+  <section class="py-40 bg-amber min-h-screen overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 mb-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div>
+          <span class="bg-charcoal text-amber px-4 py-2 rounded-full font-black text-xs tracking-widest mb-6 inline-block uppercase italic animate-pulse">{t('v4.hive.status.live')} Telemetry</span>
+          <h1 class="text-6xl md:text-8xl font-black text-charcoal tracking-tighter uppercase leading-none">{t('v4.beeops.title')}</h1>
+        </div>
+        <p class="text-xl text-charcoal/60 font-bold max-w-sm italic border-l-4 border-charcoal pl-6 mb-2">
+          {t('v4.beeops.subtitle')}
+        </p>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6">
+      <BeeOpsGauges />
+      
+      <!-- Informational Footer -->
+      <div class="mt-20 honey-card p-8 bg-charcoal text-white/40 text-[0.6rem] font-black tracking-widest uppercase text-center border-none shadow-none">
+        Location: Wołomin, PL • Data Source: IMGW-PIB • System Status: Nominal • Bzzz...
+      </div>
+    </div>
+
+    <!-- Hex Decor -->
+    <div class="absolute top-0 right-0 opacity-5 -z-10 translate-x-1/2 -translate-y-1/4">
+      <div class="hex-grid">
+        {Array.from({ length: 30 }).map(() => <div class="hex"></div>)}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .bg-charcoal { background-color: #2D2D2D; }
+</style>
