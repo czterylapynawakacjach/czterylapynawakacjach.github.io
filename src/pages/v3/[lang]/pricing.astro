@@ -1,0 +1,125 @@
+---
+import Layout from '../../../layouts/v3/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v3');
+---
+
+<Layout title={t('nav.pricing')}>
+	<!-- Artistic Pricing Header -->
+	<section class="relative min-h-[70vh] flex items-center bg-ivory pt-64 pb-32 overflow-hidden">
+		<!-- Large Artistic Stroke Text (Background) -->
+		<div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none overflow-hidden">
+			<span class="text-[30rem] font-serif font-black text-forest-950 whitespace-nowrap -rotate-6 translate-y-1/4 uppercase tracking-tighter">PRICING</span>
+		</div>
+
+		<div class="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10 items-end">
+			<div class="lg:col-span-12">
+				<h1 class="text-7xl sm:text-8xl lg:text-[10rem] font-serif font-black text-forest-950 leading-[0.8] tracking-tighter mb-12">
+					<span class="block italic text-gold text-stroke">Value</span>
+					<span class="block lg:ml-48">Investment</span>
+				</h1>
+			</div>
+		</div>
+	</section>
+
+	<!-- Broken Grid Pricing Table -->
+	<section class="py-40 bg-white">
+		<div class="max-w-[1200px] mx-auto px-6">
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start">
+				
+				<!-- Pricing Text / Intro -->
+				<div class="lg:col-span-5 sticky top-40">
+					<h2 class="text-gold font-bold tracking-[0.3em] uppercase text-xs mb-8 block">THE LUXURY OF CARE</h2>
+					<h3 class="text-5xl lg:text-6xl font-serif font-black text-forest-950 mb-10 leading-tight">
+						Transparent <span class="text-stroke">Rates</span> for Exceptional Stays.
+					</h3>
+					<p class="text-xl text-forest-600 font-light leading-relaxed mb-12">
+						{t('pricing.note')}
+					</p>
+					<a href={translatePath('contact')} class="magnetic inline-flex items-center justify-center px-10 py-5 bg-forest-950 text-gold text-sm font-black tracking-widest uppercase rounded-full hover:bg-gold hover:text-forest-950 transition-all duration-500 shadow-2xl">
+						CUSTOM QUOTE 🐾
+					</a>
+				</div>
+
+				<!-- Pricing List (Broken Grid Style) -->
+				<div class="lg:col-span-7 space-y-12">
+					<div class="group">
+						<div class="flex justify-between items-end pb-8 border-b-2 border-forest-50 group-hover:border-gold transition-colors duration-500">
+							<div class="max-w-xs">
+								<span class="text-gold font-black text-[0.6rem] tracking-[0.3em] uppercase mb-2 block">01 / DOGS</span>
+								<h4 class="text-3xl font-serif font-bold text-forest-950">{t('pricing.dog_small')}</h4>
+							</div>
+							<div class="text-right">
+								<span class="text-4xl font-serif font-black text-forest-950">80<span class="text-lg font-bold text-gold">PLN</span></span>
+								<span class="block text-[0.6rem] font-bold text-forest-300 tracking-widest uppercase mt-2">PER NIGHT</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="group lg:ml-12">
+						<div class="flex justify-between items-end pb-8 border-b-2 border-forest-50 group-hover:border-gold transition-colors duration-500">
+							<div class="max-w-xs">
+								<span class="text-gold font-black text-[0.6rem] tracking-[0.3em] uppercase mb-2 block">02 / DOGS</span>
+								<h4 class="text-3xl font-serif font-bold text-forest-950">{t('pricing.dog_large')}</h4>
+							</div>
+							<div class="text-right">
+								<span class="text-4xl font-serif font-black text-forest-950">100<span class="text-lg font-bold text-gold">PLN</span></span>
+								<span class="block text-[0.6rem] font-bold text-forest-300 tracking-widest uppercase mt-2">PER NIGHT</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="group lg:mr-12">
+						<div class="flex justify-between items-end pb-8 border-b-2 border-forest-50 group-hover:border-gold transition-colors duration-500">
+							<div class="max-w-xs">
+								<span class="text-gold font-black text-[0.6rem] tracking-[0.3em] uppercase mb-2 block">03 / CATS</span>
+								<h4 class="text-3xl font-serif font-bold text-forest-950">{t('pricing.cat')}</h4>
+							</div>
+							<div class="text-right">
+								<span class="text-4xl font-serif font-black text-forest-950">50<span class="text-lg font-bold text-gold">PLN</span></span>
+								<span class="block text-[0.6rem] font-bold text-forest-300 tracking-widest uppercase mt-2">PER NIGHT</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="group lg:ml-24">
+						<div class="flex justify-between items-end pb-8 border-b-2 border-forest-50 group-hover:border-gold transition-colors duration-500">
+							<div class="max-w-xs">
+								<span class="text-gold font-black text-[0.6rem] tracking-[0.3em] uppercase mb-2 block">04 / DAYCARE</span>
+								<h4 class="text-3xl font-serif font-bold text-forest-950">{t('pricing.daycare')}</h4>
+							</div>
+							<div class="text-right">
+								<span class="text-4xl font-serif font-black text-forest-950">60<span class="text-lg font-bold text-gold">PLN</span></span>
+								<span class="block text-[0.6rem] font-bold text-forest-300 tracking-widest uppercase mt-2">PER DAY</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Call to Action (Brave Pricing Edition) -->
+	<section class="py-64 bg-forest-950 text-ivory relative overflow-hidden group">
+		<div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+		<div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+			<h2 class="text-6xl sm:text-7xl lg:text-[10rem] font-serif font-black mb-12 leading-tight tracking-tighter">
+				Ready to <span class="text-gold italic">indulge?</span>
+			</h2>
+			<a
+				href={translatePath('contact')}
+				class="magnetic inline-flex items-center justify-center px-20 py-10 text-3xl font-black rounded-full text-forest-950 bg-gold hover:bg-white transition-all duration-500 shadow-2xl"
+			>
+				BOOK NOW 🐾
+			</a>
+		</div>
+	</section>
+</Layout>

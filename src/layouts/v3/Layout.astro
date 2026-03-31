@@ -1,0 +1,133 @@
+---
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+import Navbar from '../../components/v3/Navbar.astro';
+import Footer from '../../components/v3/Footer.astro';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/700.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/700.css';
+
+interface Props {
+	title?: string;
+}
+
+const { title } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const siteTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={t('site.description')} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{siteTitle}</title>
+	</head>
+	<body class="min-h-screen bg-[#FDFCF7] text-forest-950 font-sans selection:bg-gold/40 antialiased overflow-x-hidden">
+		<!-- Global Texture Overlay -->
+		<div class="fixed inset-0 pointer-events-none z-[9999] opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat"></div>
+		
+		<!-- Ethereal Spotlight Cursor -->
+		<div id="spotlight" class="fixed top-0 left-0 w-[400px] h-[400px] bg-gold/10 rounded-full blur-[100px] pointer-events-none z-50 -translate-x-1/2 -translate-y-1/2 mix-blend-soft-light transition-opacity duration-500 opacity-0 lg:opacity-100"></div>
+
+		<Navbar />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+
+		<script>
+			// Spotlight Cursor Logic
+			const spotlight = document.getElementById('spotlight');
+			if (spotlight) {
+				window.addEventListener('mousemove', (e) => {
+					spotlight.animate({
+						left: `${e.clientX}px`,
+						top: `${e.clientY}px`
+					}, { duration: 800, fill: 'forwards' });
+					spotlight.style.opacity = '1';
+				});
+			}
+
+			// Magnetic Elements Logic
+			const magnets = document.querySelectorAll('.magnetic');
+			magnets.forEach((magnet) => {
+				magnet.addEventListener('mousemove', (e) => {
+					const target = e.currentTarget as HTMLElement;
+					const rect = target.getBoundingClientRect();
+					const x = e.clientX - rect.left - rect.width / 2;
+					const y = e.clientY - rect.top - rect.height / 2;
+					
+					target.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+				});
+				magnet.addEventListener('mouseleave', (e) => {
+					const target = e.currentTarget as HTMLElement;
+					target.style.transform = `translate(0px, 0px)`;
+				});
+			});
+			// Eye Tracking Logic
+			window.addEventListener('mousemove', (e) => {
+				const eyes = document.querySelectorAll('.eyes circle');
+				eyes.forEach((eye) => {
+					const rect = eye.getBoundingClientRect();
+					const centerX = rect.left + rect.width / 2;
+					const centerY = rect.top + rect.height / 2;
+					
+					const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+					const distance = Math.min(2, Math.hypot(e.clientX - centerX, e.clientY - centerY) / 50);
+					
+					const moveX = Math.cos(angle) * distance;
+					const moveY = Math.sin(angle) * distance;
+					
+					(eye as HTMLElement).style.transform = `translate(${moveX}px, ${moveY}px)`;
+				});
+			});
+
+			// Scroll Trail Logic (Basic Implementation)
+			window.addEventListener('scroll', () => {
+				const path = document.getElementById('scroll-path');
+				if (path) {
+					const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+					(path as any).style.strokeDashoffset = 100 - scrollPercent;
+				}
+			});
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--gold: 212, 175, 55;
+		--forest-950: 15, 33, 26;
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		font-family: 'Fraunces', serif;
+		letter-spacing: -0.02em;
+	}
+
+	.boutique-card {
+		@apply bg-white/40 backdrop-blur-sm border border-forest-100/50 rounded-ear shadow-sm transition-all duration-500;
+	}
+
+	.boutique-card:hover {
+		@apply -translate-y-4 shadow-xl border-gold/50 bg-white/80;
+	}
+
+	.magnetic {
+		@apply transition-transform duration-200 ease-out;
+	}
+
+	/* Artistic Text Strokes */
+	.text-stroke {
+		-webkit-text-stroke: 1px rgba(15, 33, 26, 0.2);
+		color: transparent;
+	}
+
+	/* Custom Scroll Trail Component logic could be added here or in separate component */
+</style>

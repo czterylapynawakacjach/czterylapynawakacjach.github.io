@@ -1,0 +1,42 @@
+---
+import Layout from '../../../layouts/v2/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={t('nav.services')}>
+	<div class="py-24 bg-[#F8F9FA]">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-20">
+				<h1 class="text-5xl font-bold text-[#1b3a2e] mb-6">
+					{t('services.title')}
+				</h1>
+				<p class="max-w-2xl mx-auto text-xl text-[#316a4f] font-light leading-relaxed">
+					{t('services.subtitle')}
+				</p>
+			</div>
+
+			<div class="grid gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+				<div class="boutique-card p-10 group">
+					<h3 class="text-2xl font-bold text-[#1b3a2e] mb-4">{t('services.dog_boarding.title')}</h3>
+					<p class="text-[#316a4f] font-light leading-relaxed">{t('services.dog_boarding.desc')}</p>
+				</div>
+				<div class="boutique-card p-10 group">
+					<h3 class="text-2xl font-bold text-[#1b3a2e] mb-4">{t('services.cat_hotel.title')}</h3>
+					<p class="text-[#316a4f] font-light leading-relaxed">{t('services.cat_hotel.desc')}</p>
+				</div>
+				<div class="boutique-card p-10 group">
+					<h3 class="text-2xl font-bold text-[#1b3a2e] mb-4">{t('services.daycare.title')}</h3>
+					<p class="text-[#316a4f] font-light leading-relaxed">{t('services.daycare.desc')}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>

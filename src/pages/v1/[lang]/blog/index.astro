@@ -1,0 +1,57 @@
+---
+import Layout from '../../../../layouts/v1/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../../i18n/utils';
+import { languages } from '../../../../i18n/ui';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v1');
+
+const posts = (await getCollection('blog', ({ id }) => {
+	return id.startsWith(`${lang}/`);
+})).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title={t('nav.blog')}>
+	<div class="py-16 bg-white">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-12">
+				<h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+					{t('nav.blog')}
+				</h1>
+			</div>
+
+			<div class="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+				{posts.map((post) => {
+					const slugWithoutLang = post.id.split('/').slice(1).join('/').replace(/\.mdx$/, '').replace(/\.md$/, '');
+					return (
+						<article class="bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+							<div class="p-6">
+								<h2 class="text-xl font-bold text-gray-900 mb-2">
+									<a href={translatePath(`blog/${slugWithoutLang}`)} class="hover:text-blue-600 transition-colors">
+										{post.data.title}
+									</a>
+								</h2>
+								<p class="text-gray-500 text-sm mb-4">
+									{post.data.pubDate.toLocaleDateString(lang, {
+										year: 'numeric',
+										month: 'long',
+										day: 'numeric',
+									})}
+								</p>
+								<p class="text-gray-600 line-clamp-3">
+									{post.data.description}
+								</p>
+							</div>
+						</article>
+					);
+				})}
+			</div>
+		</div>
+	</div>
+</Layout>

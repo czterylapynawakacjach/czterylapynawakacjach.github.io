@@ -1,0 +1,93 @@
+---
+import Layout from '../../../layouts/v3/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v3');
+---
+
+<Layout title={t('nav.contact')}>
+	<!-- Artistic Contact Header -->
+	<section class="relative min-h-[90vh] flex items-center bg-forest-950 pt-64 pb-32 overflow-hidden">
+		<!-- Large Artistic Stroke Text (Background) -->
+		<div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none select-none overflow-hidden">
+			<span class="text-[30rem] font-serif font-black text-stroke whitespace-nowrap rotate-6 translate-x-1/4 uppercase tracking-tighter">RESERVE</span>
+		</div>
+
+		<div class="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10 items-end">
+			<div class="lg:col-span-12">
+				<h1 class="text-7xl sm:text-8xl lg:text-[12rem] font-serif font-black text-ivory leading-[0.8] tracking-tighter mb-12">
+					<span class="block text-gold italic">Hello</span>
+					<span class="block lg:ml-64">Human.</span>
+				</h1>
+			</div>
+		</div>
+	</section>
+
+	<!-- Broken Grid Contact Form & Info -->
+	<section class="py-40 bg-[#FDFCF7]">
+		<div class="max-w-[1400px] mx-auto px-6">
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start">
+				
+				<!-- Contact Info (Asymmetrical) -->
+				<div class="lg:col-span-5 space-y-24">
+					<div>
+						<h2 class="text-gold font-bold tracking-[0.3em] uppercase text-xs mb-8 block">THE RETREAT ADDRESS</h2>
+						<p class="text-4xl font-serif font-bold text-forest-950 leading-tight mb-6">
+							Leśna Droga 12,<br/>
+							00-001 Forest City
+						</p>
+						<a href="#" class="text-xs font-black tracking-widest uppercase text-gold hover:text-forest-950 transition-colors">VIEW ON MAPS →</a>
+					</div>
+
+					<div class="lg:pl-12">
+						<h2 class="text-gold font-bold tracking-[0.3em] uppercase text-xs mb-8 block">DIRECT LINES</h2>
+						<div class="space-y-4">
+							<a href="mailto:kontakt@hotel-zwierzat.pl" class="block text-2xl font-serif font-medium text-forest-950 hover:text-gold transition-colors underline decoration-gold/30 underline-offset-8">kontakt@hotel-zwierzat.pl</a>
+							<a href="tel:+48123456789" class="block text-2xl font-serif font-medium text-forest-950 hover:text-gold transition-colors">+48 123 456 789</a>
+						</div>
+					</div>
+
+					<!-- Eye Tracking Pet SVG (Draft) -->
+					<div class="relative w-40 h-40 opacity-20">
+						<svg viewBox="0 0 100 100" class="w-full h-full fill-forest-950">
+							<circle cx="50" cy="50" r="40" />
+							<g class="eyes">
+								<circle cx="35" cy="45" r="5" fill="white" />
+								<circle cx="65" cy="45" r="5" fill="white" />
+							</g>
+						</svg>
+					</div>
+				</div>
+
+				<!-- Artistic Contact Form -->
+				<div class="lg:col-span-7 bg-white p-12 lg:p-24 rounded-blob-2 shadow-2xl border border-gold/10 relative -mt-32 lg:-mt-64 group">
+					<div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-blob-2"></div>
+					<form action="https://formspree.io/f/placeholder" method="POST" class="space-y-12 relative z-10">
+						<div class="relative group">
+							<label for="name" class="block text-[0.6rem] font-black text-gold tracking-[0.4em] uppercase mb-4">{t('contact.form.name')}</label>
+							<input type="text" name="name" id="name" required class="block w-full bg-transparent border-b-2 border-forest-50 py-4 text-2xl font-serif text-forest-950 focus:border-gold focus:outline-none transition-all duration-500 placeholder:text-forest-100" placeholder="Type your name..." />
+						</div>
+						<div class="relative group">
+							<label for="email" class="block text-[0.6rem] font-black text-gold tracking-[0.4em] uppercase mb-4">{t('contact.form.email')}</label>
+							<input type="email" name="email" id="email" required class="block w-full bg-transparent border-b-2 border-forest-50 py-4 text-2xl font-serif text-forest-950 focus:border-gold focus:outline-none transition-all duration-500 placeholder:text-forest-100" placeholder="Your email address..." />
+						</div>
+						<div class="relative group">
+							<label for="message" class="block text-[0.6rem] font-black text-gold tracking-[0.4em] uppercase mb-4">{t('contact.form.message')}</label>
+							<textarea name="message" id="message" rows="4" required class="block w-full bg-transparent border-b-2 border-forest-50 py-4 text-2xl font-serif text-forest-950 focus:border-gold focus:outline-none transition-all duration-500 placeholder:text-forest-100" placeholder="Tell us about your pet..."></textarea>
+						</div>
+						<button type="submit" class="magnetic w-full py-8 px-12 border border-transparent rounded-full shadow-2xl text-xl font-black text-forest-950 bg-gold hover:bg-forest-950 hover:text-gold transition-all duration-700 relative overflow-hidden group">
+							<span class="relative z-10">{t('contact.form.submit').toUpperCase()} 🐾</span>
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+</Layout>

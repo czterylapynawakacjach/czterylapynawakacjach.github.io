@@ -1,0 +1,59 @@
+---
+import Layout from '../../../../layouts/v2/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../../i18n/utils';
+import { languages } from '../../../../i18n/ui';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v2');
+
+const posts = (await getCollection('blog', ({ id }) => {
+	return id.startsWith(`${lang}/`);
+})).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title={t('nav.blog')}>
+	<div class="py-24 bg-[#F8F9FA]">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-20">
+				<h1 class="text-5xl font-bold text-[#1b3a2e] mb-6">
+					{t('nav.blog')}
+				</h1>
+				<div class="w-24 h-1 bg-[#D4AF37] mx-auto rounded-full opacity-50"></div>
+			</div>
+
+			<div class="grid gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+				{posts.map((post) => {
+					const slugWithoutLang = post.id.split('/').slice(1).join('/').replace(/\.mdx$/, '').replace(/\.md$/, '');
+					return (
+						<article class="boutique-card group overflow-hidden">
+							<div class="p-10">
+								<p class="text-[#D4AF37] font-bold text-xs tracking-widest uppercase mb-4">
+									{post.data.pubDate.toLocaleDateString(lang, {
+										year: 'numeric',
+										month: 'long',
+										day: 'numeric',
+									})}
+								</p>
+								<h2 class="text-2xl font-bold text-[#1b3a2e] mb-4">
+									<a href={translatePath(`blog/${slugWithoutLang}`)} class="hover:text-[#D4AF37] transition-colors">
+										{post.data.title}
+									</a>
+								</h2>
+								<p class="text-[#316a4f] font-light leading-relaxed mb-6 line-clamp-3">
+									{post.data.description}
+								</p>
+								<a href={translatePath(`blog/${slugWithoutLang}`)} class="text-[#1b3a2e] font-bold text-sm border-b border-[#D4AF37] pb-1 hover:text-[#D4AF37] transition-colors">Read More</a>
+							</div>
+						</article>
+					);
+				})}
+			</div>
+		</div>
+	</div>
+</Layout>

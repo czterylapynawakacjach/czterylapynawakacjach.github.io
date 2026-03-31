@@ -1,0 +1,40 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import Layout from '../../../../layouts/v1/Layout.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map((post) => {
+		const [lang, ...slugParts] = post.id.split('/');
+		const slug = slugParts.join('/').replace(/\.mdx$/, '').replace(/\.md$/, '');
+		return {
+			params: { lang, slug: slug || undefined },
+			props: post,
+		};
+	});
+}
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={post.data.title}>
+	<article class="py-16 bg-white">
+		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="mb-8">
+				<h1 class="text-4xl font-extrabold text-gray-900 mb-4">{post.data.title}</h1>
+				<p class="text-gray-500 italic">
+					{post.data.pubDate.toLocaleDateString(post.id.split('/')[0], {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric',
+					})}
+				</p>
+			</div>
+			<div class="prose max-w-none">
+				<Content />
+			</div>
+		</div>
+	</article>
+</Layout>

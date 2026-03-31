@@ -1,0 +1,99 @@
+---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../i18n/utils';
+import { languages } from '../../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v2');
+
+const navItems = [
+  { href: '', label: 'nav.home' },
+  { href: 'services', label: 'nav.services' },
+  { href: 'pricing', label: 'nav.pricing' },
+  { href: 'blog', label: 'nav.blog' },
+  { href: 'contact', label: 'nav.contact' },
+];
+---
+
+<nav class="bg-white/80 backdrop-blur-md border-b border-[#f1f8f5] sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-20">
+      <div class="flex items-center">
+        <a href={translatePath('')} class="flex-shrink-0 flex items-center group">
+          <span class="text-2xl font-serif font-bold text-[#1b3a2e] group-hover:text-[#D4AF37] transition-colors duration-300">
+            {t('site.title')}
+          </span>
+        </a>
+        <div class="hidden md:ml-12 md:flex md:space-x-10">
+          {navItems.map(item => (
+            <a
+              href={translatePath(item.href)}
+              class="inline-flex items-center px-1 pt-1 text-sm font-medium text-[#285541] hover:text-[#D4AF37] transition-all duration-300 relative group"
+            >
+              {t(item.label as any)}
+              <span class="absolute bottom-4 left-0 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+          ))}
+        </div>
+      </div>
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="/" class="text-xs font-bold text-[#1b3a2e]/40 hover:text-[#D4AF37] transition-all duration-300 uppercase tracking-widest">{t('nav.back')}</a>
+        <div class="flex bg-[#f1f8f5] p-1 rounded-full">
+          {Object.entries(languages).map(([l, label]) => (
+            <a
+              href={`/v2/${l}/`}
+              class={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-300 ${lang === l ? 'bg-[#1b3a2e] text-[#F8F9FA] shadow-sm' : 'text-[#316a4f] hover:text-[#1b3a2e]'}`}
+            >
+              {l.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button id="v2-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-[#1b3a2e] hover:bg-[#f1f8f5] focus:outline-none transition-colors">
+          <svg class="block h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="hidden md:hidden bg-white/95 backdrop-blur-xl border-b border-[#f1f8f5]" id="v2-mobile-menu">
+    <div class="px-6 py-8 space-y-4">
+      {navItems.map(item => (
+        <a
+          href={translatePath(item.href)}
+          class="block text-lg font-serif font-bold text-[#1b3a2e] hover:text-[#D4AF37] transition-colors"
+        >
+          {t(item.label as any)}
+        </a>
+      ))}
+      <div class="pt-8 border-t border-[#f1f8f5] space-y-6">
+        <a href="/" class="block text-xs font-bold text-[#1b3a2e]/40 hover:text-[#D4AF37] transition-all duration-300 uppercase tracking-widest">{t('nav.back')}</a>
+        <div class="flex bg-[#f1f8f5] p-1 rounded-full w-max">
+          {Object.entries(languages).map(([l, label]) => (
+            <a
+              href={`/v2/${l}/`}
+              class={`px-6 py-2 text-xs font-semibold rounded-full transition-all duration-300 ${lang === l ? 'bg-[#1b3a2e] text-[#F8F9FA] shadow-sm' : 'text-[#316a4f] hover:text-[#1b3a2e]'}`}
+            >
+              {l.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const button = document.getElementById('v2-menu-button');
+  const menu = document.getElementById('v2-mobile-menu');
+
+  button?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

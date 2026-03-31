@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/PortfolioLayout.astro';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map((doc) => ({
+    params: { slug: doc.slug },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await doc.render();
+
+// Use the first heading as title if frontmatter title is missing
+const title = doc.data.title || headings[0]?.text || doc.slug;
+---
+
+<Layout title={title}>
+  <div class="max-w-4xl mx-auto px-6 py-20">
+    <a href="/" class="text-blue-600 hover:underline mb-8 inline-block">← Back to Portfolio</a>
+    <article class="prose prose-blue lg:prose-xl max-w-none bg-white p-10 rounded-2xl shadow-sm border border-gray-100">
+      <Content />
+    </article>
+  </div>
+
+  <script is:inline src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script is:inline>
+    (function() {
+      // Helper to decode HTML entities
+      function decodeHTMLEntities(text) {
+        const textArea = document.createElement('textarea');
+        textArea.innerHTML = text;
+        return textArea.value;
+      }
+
+      async function initMermaid() {
+        if (typeof mermaid === 'undefined') {
+          setTimeout(initMermaid, 100);
+          return;
+        }
+
+        mermaid.initialize({ 
+          startOnLoad: false, 
+          theme: 'forest',
+          securityLevel: 'loose'
+        });
+        
+        const blocks = document.querySelectorAll('pre');
+        for (const block of blocks) {
+          // Get text content and decode entities
+          let text = block.textContent.trim();
+          text = decodeHTMLEntities(text);
+          
+          // Check for mermaid signatures
+          if (text.startsWith('graph') || text.startsWith('flowchart') || text.startsWith('sequenceDiagram') || text.startsWith('gantt') || text.startsWith('classDiagram')) {
+            const div = document.createElement('div');
+            div.className = 'mermaid';
+            div.textContent = text; // textContent is safer for raw data
+            block.parentNode.replaceChild(div, block);
+          }
+        }
+        
+        try {
+          await mermaid.run();
+        } catch (e) {
+          console.error('Mermaid render error:', e);
+        }
+      }
+
+      if (document.readyState === 'complete') {
+        initMermaid();
+      } else {
+        window.addEventListener('load', initMermaid);
+      }
+    })();
+  </script>
+</Layout>
+
+<style is:global>
+  /* Basic prose styles if Tailwind Typography isn't fully set up or needs tweaks */
+  .prose h1 { @apply text-4xl font-black mb-8 text-gray-900; }
+  
+  .mermaid {
+    @apply flex justify-center py-12 my-8 bg-white rounded-2xl border border-gray-100 shadow-sm;
+    min-height: 200px;
+  }
+  
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+  .prose h2 { @apply text-2xl font-bold mt-12 mb-4 text-gray-800; }
+  .prose p { @apply text-gray-600 leading-relaxed mb-6; }
+  .prose ul { @apply list-disc ml-6 mb-6; }
+  .prose li { @apply mb-2; }
+  .prose pre { @apply bg-gray-900 text-white p-4 rounded-lg overflow-x-auto mb-6; }
+  .prose code { @apply bg-gray-100 px-1 rounded text-sm; }
+</style>

@@ -1,0 +1,130 @@
+---
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../i18n/utils';
+import { languages } from '../../i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v3');
+
+const navItems = [
+  { href: '', label: 'nav.home' },
+  { href: 'services', label: 'nav.services' },
+  { href: 'pricing', label: 'nav.pricing' },
+  { href: 'blog', label: 'nav.blog' },
+  { href: 'contact', label: 'nav.contact' },
+];
+---
+
+<nav class="fixed top-0 left-0 w-full z-[100] px-6 py-10 pointer-events-none">
+  <div class="max-w-[1400px] mx-auto flex justify-between items-start">
+    <!-- Brand / Logo -->
+    <div class="pointer-events-auto">
+      <a href={translatePath('')} class="magnetic group flex flex-col">
+        <span class="text-3xl font-serif font-black text-ivory mix-blend-difference group-hover:text-gold transition-colors duration-500 tracking-tighter">
+          {t('site.title').toUpperCase()}
+        </span>
+        <span class="text-[0.6rem] font-bold tracking-[0.4em] text-gold/60 mt-1 ml-1 group-hover:text-gold transition-colors">BOUTIQUE RETREAT</span>
+      </a>
+    </div>
+
+    <!-- Experimental Menu -->
+    <div class="flex flex-col items-end gap-12 pointer-events-auto">
+      <div class="hidden lg:flex items-center gap-8">
+        <a href="/" class="text-[0.6rem] font-black tracking-[0.3em] text-ivory/40 hover:text-gold transition-colors uppercase">{t('nav.back')}</a>
+        <!-- Lang Picker (Floating Bubble) -->
+        <div class="flex bg-ivory/10 backdrop-blur-xl border border-white/10 p-1.5 rounded-full shadow-2xl">
+          {Object.entries(languages).map(([l, label]) => (
+            <a
+              href={`/v3/${l}/`}
+              class={`px-6 py-2 text-[0.6rem] font-black tracking-widest rounded-full transition-all duration-500 ${lang === l ? 'bg-gold text-forest-950 shadow-xl scale-105' : 'text-ivory/60 hover:text-ivory'}`}
+            >
+              {l.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Navigation Links (Vertical offset) -->
+      <div class="hidden lg:flex flex-col items-end gap-6 pr-4">
+        {navItems.map((item, i) => (
+          <a
+            href={translatePath(item.href)}
+            class="magnetic group flex items-center gap-4 text-sm font-bold tracking-[0.2em] text-ivory/60 hover:text-gold transition-all duration-500"
+          >
+            <span class="text-[0.5rem] font-black text-gold/20 group-hover:text-gold transition-colors">0{i + 1}</span>
+            <span class="relative overflow-hidden">
+               <span class="inline-block transition-transform duration-500 group-hover:-translate-y-full">{t(item.label as any).toUpperCase()}</span>
+               <span class="absolute top-0 left-0 inline-block translate-y-full transition-transform duration-500 group-hover:translate-y-0 text-gold">{t(item.label as any).toUpperCase()}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="lg:hidden flex items-center">
+        <button id="v3-menu-button" type="button" class="p-4 bg-ivory/10 backdrop-blur-xl border border-white/10 rounded-full text-ivory hover:text-gold transition-colors shadow-2xl">
+          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Overlay Menu -->
+  <div id="v3-mobile-menu" class="hidden fixed inset-0 bg-forest-950 z-[200] flex flex-col p-12 pointer-events-auto">
+    <div class="flex justify-between items-start mb-24">
+      <div class="flex flex-col">
+        <span class="text-3xl font-serif font-black text-ivory tracking-tighter uppercase">{t('site.title')}</span>
+        <span class="text-[0.6rem] font-bold tracking-[0.4em] text-gold/60 mt-1">BOUTIQUE RETREAT</span>
+      </div>
+      <button id="v3-menu-close" class="p-4 bg-white/5 border border-white/10 rounded-full text-ivory">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-8">
+      {navItems.map((item, i) => (
+        <a
+          href={translatePath(item.href)}
+          class="text-4xl font-serif font-black text-ivory hover:text-gold transition-colors uppercase tracking-tighter"
+        >
+          <span class="text-xs font-black text-gold/20 mr-4">0{i+1}</span>
+          {t(item.label as any)}
+        </a>
+      ))}
+    </div>
+
+    <div class="mt-auto pt-12 border-t border-white/10 flex flex-col gap-12">
+      <div class="flex bg-ivory/5 p-1 rounded-full w-max">
+        {Object.entries(languages).map(([l, label]) => (
+          <a
+            href={`/v3/${l}/`}
+            class={`px-8 py-3 text-[0.6rem] font-black tracking-widest rounded-full transition-all ${lang === l ? 'bg-gold text-forest-950' : 'text-ivory/40'}`}
+          >
+            {l.toUpperCase()}
+          </a>
+        ))}
+      </div>
+      <a href="/" class="text-[0.6rem] font-black tracking-[0.3em] text-ivory/40 uppercase">{t('nav.back')}</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const openBtn = document.getElementById('v3-menu-button');
+  const closeBtn = document.getElementById('v3-menu-close');
+  const menu = document.getElementById('v3-mobile-menu');
+
+  openBtn?.addEventListener('click', () => {
+    menu?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeBtn?.addEventListener('click', () => {
+    menu?.classList.add('hidden');
+    document.body.style.overflow = '';
+  });
+</script>

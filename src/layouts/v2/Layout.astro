@@ -1,0 +1,60 @@
+---
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+import Navbar from '../../components/v2/Navbar.astro';
+import Footer from '../../components/v2/Footer.astro';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/700.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/700.css';
+
+interface Props {
+	title?: string;
+}
+
+const { title } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const siteTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={t('site.description')} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{siteTitle}</title>
+	</head>
+	<body class="min-h-screen bg-[#F8F9FA] text-[#1b3a2e] font-sans selection:bg-[#D4AF37]/20 antialiased">
+		<Navbar />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style is:global>
+	h1, h2, h3, h4, h5, h6 {
+		font-family: 'Fraunces', serif;
+	}
+
+	.boutique-card {
+		@apply bg-white border border-[#ddece3] rounded-[2rem_2rem_0.5rem_0.5rem] shadow-sm transition-all duration-300;
+	}
+
+	.boutique-card:hover {
+		@apply -translate-y-2 shadow-md border-[#D4AF37]/30;
+	}
+
+	@keyframes wag {
+		0%, 100% { transform: rotate(-2deg); }
+		50% { transform: rotate(2deg); }
+	}
+	.animate-gentle-wag {
+		animation: wag 2s ease-in-out infinite;
+	}
+</style>

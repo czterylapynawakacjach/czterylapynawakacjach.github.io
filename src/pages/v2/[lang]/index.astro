@@ -1,0 +1,67 @@
+---
+import Layout from '../../../layouts/v2/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v2');
+---
+
+<Layout>
+	<section class="relative bg-[#1b3a2e] text-[#F8F9FA] overflow-hidden py-24 lg:py-40">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+			<div class="max-w-3xl">
+				<h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-tight">
+					{t('home.hero.title')}
+				</h1>
+				<p class="text-xl sm:text-2xl text-[#bddbc9] mb-12 max-w-2xl font-light leading-relaxed">
+					{t('home.hero.subtitle')}
+				</p>
+				<div class="flex flex-col sm:flex-row gap-6">
+					<a
+						href={translatePath('contact')}
+						class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-semibold rounded-full text-[#1b3a2e] bg-[#D4AF37] hover:bg-white transition-all duration-300 shadow-xl"
+					>
+						<span class="animate-gentle-wag inline-block mr-2">🐾</span>
+						{t('home.hero.cta')}
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-24 bg-[#F8F9FA]">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="lg:text-center mb-20">
+				<h2 class="text-[#D4AF37] font-bold tracking-widest uppercase text-sm mb-4">{t('home.about.title')}</h2>
+				<p class="text-4xl sm:text-5xl font-bold text-[#1b3a2e] mb-6">
+					{t('home.features.title')}
+				</p>
+				<p class="mt-8 max-w-2xl text-lg text-[#285541] font-light leading-relaxed lg:mx-auto">
+					{t('home.about.text')}
+				</p>
+			</div>
+
+			<div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12">
+				<div class="boutique-card p-10 group overflow-hidden">
+					<h3 class="text-2xl font-bold text-[#1b3a2e] mb-4">{t('home.features.comfort.title')}</h3>
+					<p class="text-[#316a4f] font-light leading-relaxed text-lg">
+						{t('home.features.comfort.desc')}
+					</p>
+				</div>
+
+				<div class="boutique-card p-10 group overflow-hidden">
+					<h3 class="text-2xl font-bold text-[#1b3a2e] mb-4">{t('home.features.fun.title')}</h3>
+					<p class="text-[#316a4f] font-light leading-relaxed text-lg">
+						{t('home.features.fun.desc')}
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+</Layout>

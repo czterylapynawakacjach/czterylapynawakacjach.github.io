@@ -1,0 +1,48 @@
+---
+import Layout from '../../../layouts/v2/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={t('nav.pricing')}>
+	<div class="py-24 bg-white">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+			<h1 class="text-5xl font-bold text-[#1b3a2e] mb-16">
+				{t('pricing.title')}
+			</h1>
+			
+			<div class="max-w-4xl mx-auto bg-[#F8F9FA] rounded-3xl p-12 border border-[#f1f8f5] shadow-sm">
+				<div class="grid grid-cols-2 gap-8 text-left border-b border-[#ddece3] pb-8 mb-8 font-serif text-2xl font-bold text-[#1b3a2e]">
+					<div>{t('pricing.header.service')}</div>
+					<div class="text-right">{t('pricing.header.price')}</div>
+				</div>
+				
+				<div class="space-y-6">
+					<div class="grid grid-cols-2 gap-4 text-left border-b border-[#f1f8f5] pb-6 text-[#285541] text-lg">
+						<div class="font-medium">{t('pricing.dog_small')}</div>
+						<div class="text-right font-bold text-[#1b3a2e]">80 PLN / doba</div>
+					</div>
+					<div class="grid grid-cols-2 gap-4 text-left border-b border-[#f1f8f5] pb-6 text-[#285541] text-lg">
+						<div class="font-medium">{t('pricing.dog_large')}</div>
+						<div class="text-right font-bold text-[#1b3a2e]">100 PLN / doba</div>
+					</div>
+					<div class="grid grid-cols-2 gap-4 text-left border-b border-[#f1f8f5] pb-6 text-[#285541] text-lg">
+						<div class="font-medium">{t('pricing.cat')}</div>
+						<div class="text-right font-bold text-[#1b3a2e]">50 PLN / doba</div>
+					</div>
+					<div class="grid grid-cols-2 gap-4 text-left text-[#285541] text-lg">
+						<div class="font-medium">{t('pricing.daycare')}</div>
+						<div class="text-right font-bold text-[#1b3a2e]">60 PLN / dzień</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>

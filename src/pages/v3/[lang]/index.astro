@@ -1,0 +1,167 @@
+---
+import Layout from '../../../layouts/v3/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v3');
+---
+
+<Layout>
+	<!-- Experimental Hero Section -->
+	<section class="relative min-h-[120vh] flex items-center bg-forest-950 overflow-hidden pt-32 pb-64">
+		<!-- Large Artistic Stroke Text (Background) -->
+		<div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none select-none overflow-hidden">
+			<span class="text-[30rem] font-serif font-black text-stroke whitespace-nowrap -rotate-6 translate-y-1/4">PET HOTEL</span>
+		</div>
+
+		<div class="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10 items-center">
+			<div class="lg:col-span-7 space-y-12">
+				<div class="relative inline-block">
+					<span class="text-gold font-bold tracking-[0.3em] uppercase text-sm mb-6 block animate-fade-in">{t('site.title')} / EST. 2024</span>
+					<h1 class="text-7xl sm:text-8xl lg:text-9xl font-serif font-black text-ivory leading-[0.9] tracking-tighter">
+						{t('home.hero.title').split(' ').map((word, i) => (
+							<span class={`block ${i % 2 === 1 ? 'lg:ml-24' : ''}`}>{word}</span>
+						))}
+					</h1>
+				</div>
+				<p class="text-xl sm:text-2xl text-forest-200/80 font-light leading-relaxed max-w-xl lg:ml-24">
+					{t('home.hero.subtitle')}
+				</p>
+				<div class="flex flex-col sm:flex-row gap-12 lg:ml-24">
+					<a
+						href={translatePath('contact')}
+						class="magnetic inline-flex items-center justify-center px-12 py-6 text-lg font-bold rounded-full text-forest-950 bg-gold hover:bg-white transition-all duration-500 shadow-2xl relative overflow-hidden group"
+					>
+						<span class="relative z-10 flex items-center">
+							<span class="group-hover:animate-gentle-wag mr-3">🐾</span>
+							{t('home.hero.cta')}
+						</span>
+						<div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+					</a>
+					<a
+						href={translatePath('services')}
+						class="inline-flex items-center text-ivory font-bold text-lg group py-6"
+					>
+						<span class="mr-4 h-px w-12 bg-gold/50 group-hover:w-20 transition-all duration-500"></span>
+						{t('nav.services')}
+					</a>
+				</div>
+			</div>
+
+			<!-- Broken Grid Artistic Element -->
+			<div class="lg:col-span-5 relative mt-24 lg:mt-0">
+				<div class="relative w-full aspect-[4/5]">
+					<!-- Overlapping Blobs -->
+					<div class="absolute inset-0 bg-gold/10 rounded-blob-1 blur-2xl animate-pulse"></div>
+					<div class="absolute inset-0 border-2 border-gold/20 rounded-blob-2 rotate-12 scale-110"></div>
+					<div class="absolute inset-0 bg-forest-900 rounded-blob-2 overflow-hidden shadow-2xl transition-transform duration-1000 hover:rotate-2 hover:scale-105">
+						<!-- Placeholder for a high-end pet photo -->
+						<div class="w-full h-full bg-[url('https://images.unsplash.com/photo-1544568100-847a948585b9?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center mix-blend-luminosity hover:mix-blend-normal transition-all duration-700 grayscale hover:grayscale-0"></div>
+					</div>
+					<!-- Floating Accessory -->
+					<div class="absolute -bottom-10 -left-10 bg-gold p-8 rounded-ear shadow-2xl magnetic z-20 hidden lg:block">
+						<span class="text-forest-950 font-serif font-black text-3xl">5★</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Scroll Down Indicator -->
+		<div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 animate-bounce opacity-40">
+			<span class="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-ivory vertical-text">SCROLL</span>
+			<div class="w-px h-12 bg-gradient-to-b from-ivory to-transparent"></div>
+		</div>
+	</section>
+
+	<!-- Broken Grid Features Section -->
+	<section class="py-40 bg-white relative overflow-hidden">
+		<!-- Dynamic Scroll Trail SVG (Draft) -->
+		<div class="absolute left-0 top-0 w-full h-full pointer-events-none opacity-5">
+			<svg width="100%" height="100%" viewBox="0 0 100 1000" preserveAspectRatio="none">
+				<path id="scroll-path" d="M10,0 Q90,250 10,500 T90,1000" fill="none" stroke="currentColor" stroke-width="0.1" stroke-dasharray="1 2" class="text-forest-950" />
+			</svg>
+		</div>
+
+		<div class="max-w-[1400px] mx-auto px-6">
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start">
+				<div class="lg:col-span-5 sticky top-40">
+					<h2 class="text-gold font-bold tracking-widest uppercase text-xs mb-6 block">{t('home.about.title')}</h2>
+					<h3 class="text-6xl lg:text-7xl font-serif font-black text-forest-950 mb-8 leading-[0.95]">
+						We provide more than <span class="text-stroke">space.</span>
+					</h3>
+					<p class="text-xl text-forest-600 font-light leading-relaxed">
+						{t('home.about.text')}
+					</p>
+					<div class="mt-12 flex items-center gap-6">
+						<div class="w-20 h-20 rounded-full border border-forest-100 flex items-center justify-center text-gold group cursor-pointer hover:bg-forest-950 transition-all duration-500">
+							<svg class="w-8 h-8 group-hover:scale-125 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<span class="font-bold text-xs tracking-widest uppercase text-forest-300">WATCH OUR STORY</span>
+					</div>
+				</div>
+
+				<div class="lg:col-span-7 space-y-32 lg:pt-32">
+					<div class="boutique-card p-16 lg:ml-24 group relative overflow-hidden">
+						<span class="absolute -top-10 -right-10 text-[12rem] font-serif font-black text-forest-50 select-none group-hover:text-gold/5 transition-colors duration-700">01</span>
+						<div class="relative z-10">
+							<h4 class="text-3xl font-bold mb-6 text-forest-950">{t('home.features.comfort.title')}</h4>
+							<p class="text-lg text-forest-600 font-light leading-relaxed">
+								{t('home.features.comfort.desc')}
+							</p>
+						</div>
+					</div>
+
+					<div class="boutique-card p-16 group relative overflow-hidden lg:mr-24">
+						<span class="absolute -top-10 -left-10 text-[12rem] font-serif font-black text-forest-50 select-none group-hover:text-gold/5 transition-colors duration-700">02</span>
+						<div class="relative z-10">
+							<h4 class="text-3xl font-bold mb-6 text-forest-950">{t('home.features.fun.title')}</h4>
+							<p class="text-lg text-forest-600 font-light leading-relaxed">
+								{t('home.features.fun.desc')}
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Call to Action (Brave Edition) -->
+	<section class="py-64 bg-forest-950 text-ivory relative overflow-hidden group">
+		<div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+		<div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+			<h2 class="text-7xl sm:text-8xl lg:text-9xl font-serif font-black mb-12 text-stroke group-hover:text-ivory transition-all duration-700">
+				Book <span class="text-gold italic">Your</span> Stay
+			</h2>
+			<a
+				href={translatePath('contact')}
+				class="magnetic inline-flex items-center justify-center px-16 py-8 text-2xl font-black rounded-full text-forest-950 bg-ivory hover:bg-gold transition-all duration-500 shadow-2xl"
+			>
+				LETS TALK 🐾
+			</a>
+		</div>
+	</section>
+
+	<style>
+		.vertical-text {
+			writing-mode: vertical-rl;
+		}
+
+		@keyframes fade-in {
+			from { opacity: 0; transform: translateY(20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.animate-fade-in {
+			animation: fade-in 1s ease-out forwards;
+		}
+	</style>
+</Layout>

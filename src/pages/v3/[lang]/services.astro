@@ -1,0 +1,108 @@
+---
+import Layout from '../../../layouts/v3/Layout.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
+import { languages } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang, 'v3');
+---
+
+<Layout title={t('nav.services')}>
+	<!-- Broken Grid Services Intro -->
+	<section class="relative min-h-[80vh] flex items-center bg-forest-950 pt-64 pb-32 overflow-hidden">
+		<!-- Large Artistic Stroke Text (Background) -->
+		<div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none select-none overflow-hidden">
+			<span class="text-[30rem] font-serif font-black text-stroke whitespace-nowrap rotate-12 translate-x-1/4">OFFERINGS</span>
+		</div>
+
+		<div class="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10 items-end">
+			<div class="lg:col-span-8">
+				<h1 class="text-7xl sm:text-8xl lg:text-9xl font-serif font-black text-ivory leading-[0.8] tracking-tighter mb-12">
+					<span class="block">Our</span>
+					<span class="block lg:ml-24 text-gold italic">Exclusive</span>
+					<span class="block lg:ml-48">Services</span>
+				</h1>
+			</div>
+			<div class="lg:col-span-4 lg:mb-12">
+				<p class="text-xl text-forest-200/60 font-light leading-relaxed max-w-sm">
+					{t('services.subtitle')}
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Experimental Service Cards -->
+	<section class="py-40 bg-[#FDFCF7]">
+		<div class="max-w-[1400px] mx-auto px-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-24">
+				
+				<!-- Dog Boarding (Asymmetrical) -->
+				<div class="lg:mt-32">
+					<div class="boutique-card group p-12 relative overflow-hidden h-full flex flex-col justify-between">
+						<div class="absolute -top-10 -right-10 text-[15rem] font-serif font-black text-forest-50 select-none group-hover:text-gold/10 transition-colors duration-700">A</div>
+						<div class="relative z-10">
+							<div class="w-16 h-16 rounded-full bg-forest-950 flex items-center justify-center text-gold mb-12 group-hover:scale-110 transition-transform duration-500 shadow-xl">🐾</div>
+							<h3 class="text-4xl font-serif font-black text-forest-950 mb-8 leading-tight">{t('services.dog_boarding.title')}</h3>
+							<p class="text-lg text-forest-600 font-light leading-relaxed mb-12 italic border-l-2 border-gold/30 pl-6">
+								{t('services.dog_boarding.desc')}
+							</p>
+						</div>
+						<a href={translatePath('contact')} class="magnetic inline-flex self-start px-8 py-4 bg-forest-950 text-gold text-xs font-black tracking-widest uppercase rounded-full hover:bg-gold hover:text-forest-950 transition-all duration-500">BOOK NOW</a>
+					</div>
+				</div>
+
+				<!-- Cat Hotel (Offset & Broken) -->
+				<div class="lg:-mt-24">
+					<div class="boutique-card group p-12 relative overflow-hidden h-full flex flex-col justify-between bg-white border-gold/10">
+						<div class="absolute -bottom-10 -left-10 text-[15rem] font-serif font-black text-forest-50 select-none group-hover:text-gold/10 transition-colors duration-700">B</div>
+						<div class="relative z-10">
+							<div class="w-16 h-16 rounded-full bg-gold flex items-center justify-center text-forest-950 mb-12 group-hover:scale-110 transition-transform duration-500 shadow-xl">🐈</div>
+							<h3 class="text-4xl font-serif font-black text-forest-950 mb-8 leading-tight">{t('services.cat_hotel.title')}</h3>
+							<p class="text-lg text-forest-600 font-light leading-relaxed mb-12 italic border-l-2 border-gold/30 pl-6">
+								{t('services.cat_hotel.desc')}
+							</p>
+						</div>
+						<a href={translatePath('contact')} class="magnetic inline-flex self-start px-8 py-4 border-2 border-forest-950 text-forest-950 text-xs font-black tracking-widest uppercase rounded-full hover:bg-forest-950 hover:text-gold transition-all duration-500">RESERVE A SPOT</a>
+					</div>
+				</div>
+
+				<!-- Daycare (Floating & Artistic) -->
+				<div class="lg:mt-48">
+					<div class="boutique-card group p-12 relative overflow-hidden h-full flex flex-col justify-between">
+						<div class="absolute -top-10 -left-10 text-[15rem] font-serif font-black text-forest-50 select-none group-hover:text-gold/10 transition-colors duration-700">C</div>
+						<div class="relative z-10">
+							<div class="w-16 h-16 rounded-full bg-forest-950 flex items-center justify-center text-gold mb-12 group-hover:scale-110 transition-transform duration-500 shadow-xl">☀️</div>
+							<h3 class="text-4xl font-serif font-black text-forest-950 mb-8 leading-tight">{t('services.daycare.title')}</h3>
+							<p class="text-lg text-forest-600 font-light leading-relaxed mb-12 italic border-l-2 border-gold/30 pl-6">
+								{t('services.daycare.desc')}
+							</p>
+						</div>
+						<a href={translatePath('contact')} class="magnetic inline-flex self-start px-8 py-4 bg-gold text-forest-950 text-xs font-black tracking-widest uppercase rounded-full hover:bg-forest-950 hover:text-gold transition-all duration-500 shadow-xl">ENQUIRE</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+	<!-- Call to Action (Brave Service Edition) -->
+	<section class="py-64 bg-forest-950 text-ivory relative overflow-hidden group">
+		<div class="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+		<div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+			<h2 class="text-6xl sm:text-7xl lg:text-8xl font-serif font-black mb-12 leading-tight">
+				Your Pet <span class="text-stroke italic text-gold">Deserves</span> This.
+			</h2>
+			<a
+				href={translatePath('contact')}
+				class="magnetic inline-flex items-center justify-center px-16 py-8 text-2xl font-black rounded-full text-forest-950 bg-gold hover:bg-white transition-all duration-500 shadow-2xl"
+			>
+				LETS START A JOURNEY 🐾
+			</a>
+		</div>
+	</section>
+</Layout>
