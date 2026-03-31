@@ -5,10 +5,6 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-env:
-  # Ensures all JS-based actions run on the Node 24 engine
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 permissions:
   contents: read
   pages: write
@@ -19,12 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # v4/v5 are both fine with the ENV flag above
+        uses: actions/checkout@v5 # v5 natively supports Node 24 runners
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5 # v5 natively supports Node 24 runners
         with:
-          node-version: 24 # Aligned with the runner engine
+          node-version: 24 
           cache: 'npm'
 
       - name: Install dependencies
@@ -37,7 +33,7 @@ jobs:
         run: touch dist/.nojekyll 
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3 # v3 remains standard for Pages logic
         with:
           path: ./dist
 
@@ -50,4 +46,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5 # Matches the v5 logic for the runner
