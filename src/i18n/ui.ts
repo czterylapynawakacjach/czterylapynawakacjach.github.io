@@ -68,7 +68,7 @@ export const ui = {
     'v4.terms.propolis': 'Propolis',
     'v4.terms.queen': 'Królowa',
     'v4.terms.worker': 'Robotnica',
-    'v4.terms.beetastic': 'Bzzz-tastyczne!',
+    'v4.terms.beetastic': 'Bzzz-tastyczne!!',
     'v4.home.welcome': 'Witaj w Ulu!',
     'v4.home.cta.swarm': 'Dołącz do roju 🐝',
     'v4.home.cta.pantry': 'Odwiedź Spiżarnię',
