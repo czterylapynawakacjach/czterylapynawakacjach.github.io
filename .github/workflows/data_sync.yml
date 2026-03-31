@@ -2,7 +2,7 @@ name: Hive Telemetry Sync
 
 on:
   schedule:
-    - cron: '0 5 * * *' # 5 AM daily (CET)
+    - cron: '0 */3 * * *' # Every 3 hours, at the top of the hour (UTC)
   workflow_dispatch: # Allows manual trigger
 
 jobs:
