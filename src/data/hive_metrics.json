@@ -1,16 +1,5 @@
 [
   {
-    "timestamp": "2026-03-26T12:00:00",
-    "date": "2026-03-26",
-    "temp": 14.2,
-    "wind": 18.0,
-    "rain": 0.0,
-    "gdd_gain": 4.2,
-    "status": "Optimal",
-    "humidity": "55",
-    "pressure": "1012"
-  },
-  {
     "timestamp": "2026-03-26T15:00:00",
     "date": "2026-03-26",
     "temp": 15.8,
@@ -438,5 +427,16 @@
     "status": "Restricted",
     "humidity": "40.7",
     "pressure": "1020"
+  },
+  {
+    "timestamp": "2026-04-01T23:04:48.192761",
+    "date": "2026-04-01",
+    "temp": 7.4,
+    "wind": 14.4,
+    "rain": 0.0,
+    "gdd_gain": 0,
+    "status": "Restricted",
+    "humidity": "50.6",
+    "pressure": "1019.7"
   }
 ]
