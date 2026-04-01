@@ -7,6 +7,7 @@ from datetime import datetime
 STATION_NAME = "warszawa" 
 BASE_TEMP = 10.0
 DATA_FILE = "src/data/hive_metrics.json"
+MAX_ENTRIES = 40 # 5 days * 8 entries (every 3 hours)
 
 def fetch_imgw_data():
     url = f"https://danepubliczne.imgw.pl/api/data/synop/station/{STATION_NAME}"
@@ -24,6 +25,7 @@ def fetch_imgw_data():
         is_flyable = t_max > 14 and wind < 20 and rain == 0
         
         new_entry = {
+            "timestamp": datetime.now().isoformat(),
             "date": datetime.now().strftime("%Y-%m-%d"),
             "temp": t_max,
             "wind": round(wind, 1),
@@ -52,19 +54,17 @@ def update_data():
     else:
         history = []
 
-    # Check if we already have data for today
-    if history and history[-1]['date'] == new_data['date']:
-        history[-1] = new_data
-    else:
-        history.append(new_data)
-        # Keep only last 30 days
-        if len(history) > 30:
-            history = history[-30:]
+    # Append new data
+    history.append(new_data)
+    
+    # Keep only last MAX_ENTRIES
+    if len(history) > MAX_ENTRIES:
+        history = history[-MAX_ENTRIES:]
 
     with open(DATA_FILE, 'w') as f:
         json.dump(history, f, indent=2)
     
-    print(f"Successfully updated hive metrics for {new_data['date']}")
+    print(f"Successfully updated hive metrics at {new_data['timestamp']}")
 
 if __name__ == "__main__":
     update_data()

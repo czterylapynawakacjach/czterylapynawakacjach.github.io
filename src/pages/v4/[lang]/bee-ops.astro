@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/v4/Layout.astro';
 import BeeOpsGauges from '../../../components/v4/BeeOpsGauges.astro';
+import BeeOpsCharts from '../../../components/v4/BeeOpsCharts.astro';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
 import { languages } from '../../../i18n/ui';
 
@@ -13,7 +14,7 @@ const t = useTranslations(lang);
 ---
 
 <Layout title={t('v4.nav.beeops')}>
-  <section class="py-40 bg-amber min-h-screen overflow-hidden">
+  <section class="py-40 bg-amber min-h-screen overflow-hidden text-charcoal">
     <div class="max-w-7xl mx-auto px-6 mb-24">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
@@ -29,8 +30,10 @@ const t = useTranslations(lang);
     <div class="max-w-7xl mx-auto px-6">
       <BeeOpsGauges />
       
+      <BeeOpsCharts />
+
       <!-- Informational Footer -->
-      <div class="mt-20 honey-card p-8 bg-charcoal text-white/40 text-[0.6rem] font-black tracking-widest uppercase text-center border-none shadow-none">
+      <div class="mt-32 honey-card p-8 bg-charcoal text-white/40 text-[0.6rem] font-black tracking-widest uppercase text-center border-none shadow-none">
         Location: Wołomin, PL • Data Source: IMGW-PIB • System Status: Nominal • Bzzz...
       </div>
     </div>
