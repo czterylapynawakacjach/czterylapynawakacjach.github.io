@@ -15,7 +15,7 @@ const t = useTranslations(lang);
 
 <Layout title={t('v4.nav.beeops')}>
   <section class="py-40 bg-amber min-h-screen overflow-hidden text-charcoal">
-    <div class="max-w-7xl mx-auto px-6 mb-24">
+    <div class="max-w-7xl mx-auto px-6 mb-16">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
           <span class="bg-charcoal text-amber px-4 py-2 rounded-full font-black text-xs tracking-widest mb-6 inline-block uppercase italic animate-pulse">{t('v4.hive.status.live')} Telemetry</span>
@@ -28,6 +28,14 @@ const t = useTranslations(lang);
     </div>
 
     <div class="max-w-7xl mx-auto px-6">
+      <!-- Live Data Note -->
+      <div class="mb-12 flex items-center gap-4 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border-2 border-charcoal/5 w-max">
+        <span class="text-2xl animate-bounce">📍</span>
+        <p class="text-sm font-black uppercase tracking-widest text-charcoal/80">
+          {t('v4.beeops.note')}
+        </p>
+      </div>
+
       <BeeOpsGauges />
       
       <BeeOpsCharts />

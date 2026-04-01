@@ -43,57 +43,70 @@ const dailyMinMax = days.map(day => {
 // Map envelope to all 40 points
 const envelopeMin = metrics.map(m => dailyMinMax.find(d => d.date === m.date).min);
 const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).max);
+
+// Translation Strings for Script
+const chartStrings = {
+  currentTemp: t('v4.beeops.charts.labels.current_temp'),
+  dailyMax: t('v4.beeops.charts.labels.daily_max'),
+  dailyMin: t('v4.beeops.charts.labels.daily_min'),
+  rain: t('v4.beeops.charts.labels.rain'),
+  gddAccumulation: t('v4.beeops.charts.labels.gdd_accumulation'),
+  windSpeed: t('v4.beeops.charts.labels.wind_speed'),
+  pressure: t('v4.beeops.charts.labels.pressure'),
+  currentYear: t('v4.beeops.charts.labels.current_year'),
+  historicalGhost: t('v4.beeops.charts.labels.historical_ghost'),
+};
 ---
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-24">
   <!-- 1. Thermal Envelope -->
   <div class="honey-card p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">1. Thermal Envelope</h3>
+    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.thermal.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="thermalChart"></canvas>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">Monitoring "Thermal Debt." Bees consume honey to stay above the envelope floor.</p>
+    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.thermal.desc')}</p>
   </div>
 
   <!-- 2. Nectar Washout -->
   <div class="honey-card p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">2. Nectar Washout & Bloom</h3>
+    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.washout.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="washoutChart"></canvas>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">Rain spikes (bars) reset the flow. Plants need 48h to recharge after a washout.</p>
+    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.washout.desc')}</p>
   </div>
 
   <!-- 3. Foraging Throughput -->
   <div class="honey-card p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">3. Foraging Throughput</h3>
+    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="windChart"></canvas>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">Wind > 20 km/h grounds the workforce. No flight = No income.</p>
+    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
   </div>
 
   <!-- 4. Barometric Panic -->
   <div class="honey-card p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
-    <h3 class="text-xl font-black text-amber mb-6 uppercase italic">4. Barometric Panic Signal</h3>
+    <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="pressureChart"></canvas>
     </div>
-    <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">Sharp drops indicate storms. Grumpy bees ahead—DO NOT OPEN HIVE.</p>
+    <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.panic.desc')}</p>
   </div>
 
   <!-- 5. Cumulative GDD Comparison -->
   <div class="honey-card p-8 bg-white border-4 border-charcoal lg:col-span-2 relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">5. Seasonal "Ghost" GDD Comparison</h3>
+    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')}</h3>
     <div class="aspect-[21/9] w-full">
       <canvas id="gddChart"></canvas>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center italic">Tracking peak flow vs last year. If current is above "Ghost", add honey supers early.</p>
+    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center italic">{t('v4.beeops.charts.gdd.desc')}</p>
   </div>
 </div>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script is:inline define:vars={{ labels, temps, envelopeMin, envelopeMax, rains, gddData, winds, pressures, ghostData }}>
+<script is:inline define:vars={{ labels, temps, envelopeMin, envelopeMax, rains, gddData, winds, pressures, ghostData, chartStrings }}>
   document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.family = 'Inter';
     Chart.defaults.font.weight = '900';
@@ -106,7 +119,7 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
         labels: labels,
         datasets: [
           {
-            label: 'Current Temp',
+            label: chartStrings.currentTemp,
             data: temps,
             borderColor: '#FFBF00',
             backgroundColor: '#FFBF00',
@@ -116,7 +129,7 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
             zIndex: 2
           },
           {
-            label: 'Daily Max',
+            label: chartStrings.dailyMax,
             data: envelopeMax,
             borderColor: 'rgba(0,0,0,0.05)',
             backgroundColor: 'rgba(0,0,0,0.05)',
@@ -126,7 +139,7 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
             zIndex: 1
           },
           {
-            label: 'Daily Min',
+            label: chartStrings.dailyMin,
             data: envelopeMin,
             borderColor: 'transparent',
             backgroundColor: 'transparent',
@@ -144,15 +157,15 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
       data: {
         labels: labels,
         datasets: [
-          { type: 'bar', label: 'Rain (mm)', data: rains, backgroundColor: '#3B82F6', order: 2 },
-          { type: 'line', label: 'GDD Accumulation', data: gddData, borderColor: '#FFBF00', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
+          { type: 'bar', label: chartStrings.rain, data: rains, backgroundColor: '#3B82F6', order: 2 },
+          { type: 'line', label: chartStrings.gddAccumulation, data: gddData, borderColor: '#FFBF00', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
         ]
       },
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
-          y: { title: { display: true, text: 'Rain mm' } },
-          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Cumulative GDD' } }
+          y: { title: { display: true, text: chartStrings.rain } },
+          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: chartStrings.gddAccumulation } }
         },
         plugins: { legend: { display: false } } 
       }
@@ -163,7 +176,7 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
       type: 'bar',
       data: {
         labels: labels,
-        datasets: [{ label: 'Wind Speed', data: winds, backgroundColor: '#2D2D2D' }]
+        datasets: [{ label: chartStrings.windSpeed, data: winds, backgroundColor: '#2D2D2D' }]
       },
       options: { 
         responsive: true, maintainAspectRatio: false,
@@ -173,7 +186,7 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
                 annotations: { line1: { type: 'line', yMin: 20, borderColor: 'red', borderWidth: 2 } }
             }
         },
-        scales: { y: { beginAtZero: true } }
+        scales: { y: { beginAtZero: true, title: { display: true, text: 'km/h' } } }
       }
     });
 
@@ -182,13 +195,13 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
       type: 'line',
       data: {
         labels: labels,
-        datasets: [{ label: 'Pressure', data: pressures, borderColor: '#FFBF00', borderWidth: 4, pointRadius: 0, fill: true, backgroundColor: 'rgba(255,191,0,0.1)', tension: 0.4 }]
+        datasets: [{ label: chartStrings.pressure, data: pressures, borderColor: '#FFBF00', borderWidth: 4, pointRadius: 0, fill: true, backgroundColor: 'rgba(255,191,0,0.1)', tension: 0.4 }]
       },
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
             x: { display: false }, 
-            y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#FFBF00' } } 
+            y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#FFBF00' }, title: { display: true, text: 'hPa', color: '#FFBF00' } } 
         },
         plugins: { legend: { display: false } }
       }
@@ -200,8 +213,8 @@ const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).ma
       data: {
         labels: labels,
         datasets: [
-          { label: 'Current Year', data: gddData, borderColor: '#FFBF00', borderWidth: 6, tension: 0.4 },
-          { label: 'Historical Ghost', data: ghostData, borderColor: 'rgba(45,45,45,0.1)', borderWidth: 4, borderDash: [5, 5], tension: 0.4, fill: true, backgroundColor: 'rgba(45,45,45,0.02)' }
+          { label: chartStrings.currentYear, data: gddData, borderColor: '#FFBF00', borderWidth: 6, tension: 0.4 },
+          { label: chartStrings.historicalGhost, data: ghostData, borderColor: 'rgba(45,45,45,0.1)', borderWidth: 4, borderDash: [5, 5], tension: 0.4, fill: true, backgroundColor: 'rgba(45,45,45,0.02)' }
         ]
       },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
