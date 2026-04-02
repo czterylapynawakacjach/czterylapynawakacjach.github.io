@@ -2,6 +2,7 @@
 import Layout from '../../../layouts/v4/Layout.astro';
 import BeeOpsGauges from '../../../components/v4/BeeOpsGauges.astro';
 import BeeOpsCharts from '../../../components/v4/BeeOpsCharts.astro';
+import metrics from '../../../data/hive_metrics.json';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
 import { languages } from '../../../i18n/ui';
 
@@ -11,6 +12,16 @@ export function getStaticPaths() {
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const lastUpdate = metrics[metrics.length - 1]?.timestamp;
+const formattedTime = lastUpdate 
+  ? new Date(lastUpdate).toLocaleString(lang === 'pl' ? 'pl-PL' : 'en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      day: 'numeric',
+      month: 'long'
+    })
+  : 'N/A';
 ---
 
 <Layout title={t('v4.nav.beeops')}>
@@ -31,9 +42,14 @@ const t = useTranslations(lang);
       <!-- Live Data Note -->
       <div class="mb-12 flex flex-col sm:flex-row items-center gap-4 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border-2 border-charcoal/5 w-full sm:w-max mx-auto md:mx-0">
         <span class="text-2xl animate-bounce">📍</span>
-        <p class="text-xs sm:text-sm font-black uppercase tracking-widest text-charcoal/80 text-center sm:text-left">
-          {t('v4.beeops.note')}
-        </p>
+        <div class="flex flex-col">
+          <p class="text-xs sm:text-sm font-black uppercase tracking-widest text-charcoal/80 text-center sm:text-left leading-tight">
+            {t('v4.beeops.note')}
+          </p>
+          <p class="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-charcoal/40 text-center sm:text-left mt-1">
+            {t('v4.beeops.last_update')} {formattedTime}
+          </p>
+        </div>
       </div>
 
       <BeeOpsGauges />
