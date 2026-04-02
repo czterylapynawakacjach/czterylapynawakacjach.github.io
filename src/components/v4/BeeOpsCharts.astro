@@ -60,7 +60,7 @@ const chartStrings = {
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-24">
   <!-- 1. Thermal Envelope -->
-  <div class="honey-card p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
     <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.thermal.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="thermalChart"></canvas>
@@ -69,7 +69,7 @@ const chartStrings = {
   </div>
 
   <!-- 2. Nectar Washout -->
-  <div class="honey-card p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
     <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.washout.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="washoutChart"></canvas>
@@ -78,7 +78,7 @@ const chartStrings = {
   </div>
 
   <!-- 3. Foraging Throughput -->
-  <div class="honey-card p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
     <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="windChart"></canvas>
@@ -87,7 +87,7 @@ const chartStrings = {
   </div>
 
   <!-- 4. Barometric Panic -->
-  <div class="honey-card p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
+  <div class="honey-card p-4 md:p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
     <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
     <div class="aspect-video w-full">
       <canvas id="pressureChart"></canvas>
@@ -96,7 +96,7 @@ const chartStrings = {
   </div>
 
   <!-- 5. Cumulative GDD Comparison -->
-  <div class="honey-card p-8 bg-white border-4 border-charcoal lg:col-span-2 relative group overflow-hidden">
+  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 relative group overflow-hidden">
     <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')}</h3>
     <div class="aspect-[21/9] w-full">
       <canvas id="gddChart"></canvas>

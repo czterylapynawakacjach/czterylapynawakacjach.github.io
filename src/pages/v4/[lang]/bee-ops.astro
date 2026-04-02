@@ -19,7 +19,7 @@ const t = useTranslations(lang);
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div>
           <span class="bg-charcoal text-amber px-4 py-2 rounded-full font-black text-xs tracking-widest mb-6 inline-block uppercase italic animate-pulse">{t('v4.hive.status.live')} Telemetry</span>
-          <h1 class="text-6xl md:text-8xl font-black text-charcoal tracking-tighter uppercase leading-none">{t('v4.beeops.title')}</h1>
+          <h1 class="text-5xl sm:text-7xl md:text-8xl font-black text-charcoal tracking-tighter uppercase leading-none">{t('v4.beeops.title')}</h1>
         </div>
         <p class="text-xl text-charcoal/60 font-bold max-w-sm italic border-l-4 border-charcoal pl-6 mb-2">
           {t('v4.beeops.subtitle')}
@@ -29,9 +29,9 @@ const t = useTranslations(lang);
 
     <div class="max-w-7xl mx-auto px-6">
       <!-- Live Data Note -->
-      <div class="mb-12 flex items-center gap-4 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border-2 border-charcoal/5 w-max">
+      <div class="mb-12 flex flex-col sm:flex-row items-center gap-4 bg-white/30 backdrop-blur-sm p-4 rounded-2xl border-2 border-charcoal/5 w-full sm:w-max mx-auto md:mx-0">
         <span class="text-2xl animate-bounce">📍</span>
-        <p class="text-sm font-black uppercase tracking-widest text-charcoal/80">
+        <p class="text-xs sm:text-sm font-black uppercase tracking-widest text-charcoal/80 text-center sm:text-left">
           {t('v4.beeops.note')}
         </p>
       </div>
@@ -47,9 +47,9 @@ const t = useTranslations(lang);
     </div>
 
     <!-- Hex Decor -->
-    <div class="absolute top-0 right-0 opacity-5 -z-10 translate-x-1/2 -translate-y-1/4">
+    <div class="absolute top-0 right-0 opacity-5 -z-10 translate-x-1/2 -translate-y-1/4 w-full max-w-[600px] pointer-events-none">
       <div class="hex-grid">
-        {Array.from({ length: 30 }).map(() => <div class="hex"></div>)}
+        {Array.from({ length: 20 }).map(() => <div class="hex scale-75 md:scale-100"></div>)}
       </div>
     </div>
   </section>

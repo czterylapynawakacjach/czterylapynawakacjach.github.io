@@ -2,14 +2,17 @@ name: Hive Telemetry Sync
 
 on:
   schedule:
-    - cron: '0 */3 * * *' # Every 3 hours, at the top of the hour (UTC)
+    - cron: '0 */3 * * *' # Every 3 hours
   workflow_dispatch: # Allows manual trigger
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   sync_and_deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       
@@ -29,8 +32,32 @@ jobs:
           git config user.name "BeeBot"
           git config user.email "actions@github.com"
           git add src/data/hive_metrics.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update daily hive telemetry [skip ci]" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update hive telemetry data" && git push)
 
-      # Build and Deploy step is already in deploy.yml
-      # This push will trigger deploy.yml if not [skip ci]
-      # But we might want to consolidate or just let push trigger it.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build Astro
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: sync_and_deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
