@@ -37,7 +37,7 @@ def calculate_intensity(temp, wind, rain):
     """Calculates Foraging Intensity Index (0-100%)."""
     score = 100 - (wind * 4)
     score = max(0, min(100, score))
-    if rain > 0 or temp < 12:
+    if rain > 0 or temp < 10:
         return 0
     if temp < 14:
         score *= 0.5

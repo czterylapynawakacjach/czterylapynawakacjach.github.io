@@ -7,8 +7,8 @@ def calculate_intensity(temp, wind, rain):
     score = 100 - (wind * 4)
     score = max(0, min(100, score))
     
-    # 2. Hard constraints
-    if rain > 0 or temp < 12:
+    # 2. Hard constraints - 10°C matches Restricted status
+    if rain > 0 or temp < 10:
         return 0
     
     # 3. Efficiency penalty for cool weather
