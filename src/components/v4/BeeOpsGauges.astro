@@ -5,7 +5,7 @@ import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const today = metrics[metrics.length - 1];
+const today = metrics[metrics.length - 1] || { rolling_gdd: 0, delta_t: 0, status: 'Restricted' };
 
 // Logic for Delta T Status
 const getDeltaTStatus = (dt: number) => {

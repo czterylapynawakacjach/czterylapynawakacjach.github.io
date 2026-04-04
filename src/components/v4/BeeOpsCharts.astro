@@ -8,20 +8,56 @@ const t = useTranslations(lang);
 
 // 1. Display Windows
 const displayTelemetry = telemetry.slice(-56); // Last period of samples
-// Display the actual last 16 entries (samples) from the log
 const displayTimeline = telemetry.slice(-16);  
-const displayArchive = archive.slice(-14);     // Last 14 days
+const displayArchiveRaw = [...archive];     
+
+// --- LOGIC: Include "Today" (Partial Data) in Archive Charts ---
+// Use the date from the latest telemetry entry instead of system time to avoid TZ issues
+const latestEntry = telemetry[telemetry.length - 1];
+const todayDate = latestEntry?.date;
+const todayTelemetry = telemetry.filter(m => m.date === todayDate);
+
+if (todayTelemetry.length > 0 && !displayArchiveRaw.find(a => a.date === todayDate)) {
+    const t_max = Math.max(...todayTelemetry.map(m => m.temp));
+    const t_min = Math.min(...todayTelemetry.map(m => m.temp));
+    const avg_p = todayTelemetry.reduce((acc, m) => acc + m.pressure, 0) / todayTelemetry.length;
+    const avg_h = todayTelemetry.reduce((acc, m) => acc + m.humidity, 0) / todayTelemetry.length;
+    const total_r = todayTelemetry.reduce((acc, m) => acc + m.rain, 0);
+    
+    // Use the latest rolling GDD as an approximation for partial day gain
+    const latestGDD = todayTelemetry[todayTelemetry.length - 1].rolling_gdd || 0;
+    const lastCumulative = archive[archive.length - 1]?.cumulative_gdd || 0;
+    
+    const optimal_slots = todayTelemetry.filter(m => m.status === "Optimal").length;
+    const flight_hours = optimal_slots * (24 / 8); // Normalized to 3h intervals
+
+    displayArchiveRaw.push({
+        date: todayDate,
+        t_max,
+        t_min,
+        avg_pressure: Math.round(avg_p * 10) / 10,
+        total_rain: Math.round(total_r * 10) / 10,
+        avg_humidity: Math.round(avg_h * 10) / 10,
+        daily_gdd: latestGDD,
+        cumulative_gdd: Math.round((lastCumulative + latestGDD) * 100) / 100,
+        flight_hours,
+        avg_delta_t: 0
+    });
+}
+
+const displayArchive = displayArchiveRaw.slice(-14); // Last 14 days including partial today
 
 // Prepare Day Boundaries for Timeline
 const timelineDays = [];
-let lastDay = '';
+let lastDayLabel = '';
 displayTimeline.forEach((m, i) => {
-  if (m.date !== lastDay) {
+  const currentDayLabel = new Date(m.timestamp).toLocaleDateString(lang === 'pl' ? 'pl-PL' : 'en-US', { weekday: 'short', day: 'numeric' });
+  if (currentDayLabel !== lastDayLabel) {
     timelineDays.push({ 
       index: i, 
-      label: new Date(m.timestamp).toLocaleDateString(lang === 'pl' ? 'pl-PL' : 'en-US', { weekday: 'short', day: 'numeric' })
+      label: currentDayLabel
     });
-    lastDay = m.date;
+    lastDayLabel = currentDayLabel;
   }
 });
 
@@ -40,8 +76,8 @@ const foragingIntensity = displayTelemetry.map(m => m.foraging_intensity || 0);
 const foragingStatuses = displayTelemetry.map(m => m.status);
 
 // 3. Thermal Envelope (from displayed telemetry)
-const days = [...new Set(displayTelemetry.map(m => m.date))];
-const dailyMinMax = days.map(day => {
+const telemetryDays = [...new Set(displayTelemetry.map(m => m.date))];
+const dailyMinMax = telemetryDays.map(day => {
     const dayTemps = displayTelemetry.filter(m => m.date === day).map(m => m.temp);
     return {
         date: day,
@@ -77,7 +113,7 @@ const showStarvationWarning = bloomStarted && recentFlightHours < 6;
 // 6. Foraging Timeline Colors
 const getStatusColor = (status: string) => {
   if (status === 'Optimal') return 'bg-green-500';
-  if (status === 'Marginal') return 'bg-amber'; // Fixed: using custom 'amber' from tailwind.config.mjs
+  if (status === 'Marginal') return 'bg-amber'; // Custom amber
   return 'bg-red-500'; 
 };
 
@@ -188,7 +224,7 @@ const chartStrings = {
 
     <!-- 6. Seasonal GDD "Ghost" -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')}</h3>
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')} (14 Days)</h3>
       <div class="aspect-video w-full">
         <canvas id="gddChart"></canvas>
       </div>
@@ -224,6 +260,7 @@ const chartStrings = {
     // Helper for scale styling
     const commonScales = {
         x: {
+            display: true, // ENSURE VISIBLE
             grid: { display: false },
             ticks: {
                 maxRotation: 45,
@@ -376,7 +413,7 @@ const chartStrings = {
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
-            x: { display: false }, 
+            x: { ...commonScales.x }, // ENABLE X AXIS
             y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#FFBF00' }, title: { display: true, text: 'hPa', color: '#FFBF00' } } 
         },
         plugins: { legend: { display: false } }
@@ -393,7 +430,12 @@ const chartStrings = {
           { label: chartStrings.historicalGhost, data: ghostData, borderColor: 'rgba(45,45,45,0.1)', borderWidth: 4, borderDash: [5, 5], tension: 0.4, fill: true, backgroundColor: 'rgba(45,45,45,0.02)' }
         ]
       },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        scales: commonScales,
+        plugins: { legend: { position: 'bottom' } } 
+      }
     });
 
     // 7. Flight Hours vs Daily GDD
@@ -408,6 +450,7 @@ const chartStrings = {
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
+          ...commonScales,
           y: { beginAtZero: true, title: { display: true, text: 'Hours' } },
           y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Daily GDD' } }
         },
