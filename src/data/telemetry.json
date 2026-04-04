@@ -8,7 +8,8 @@
     "gdd_gain": 4.2,
     "status": "Optimal",
     "humidity": "60",
-    "pressure": "1021"
+    "pressure": "1021",
+    "rolling_gdd": 4.2
   },
   {
     "timestamp": "2026-03-31T00:00:00",
@@ -19,7 +20,8 @@
     "gdd_gain": 3.5,
     "status": "Restricted",
     "humidity": "65",
-    "pressure": "1022"
+    "pressure": "1022",
+    "rolling_gdd": 3.85
   },
   {
     "timestamp": "2026-03-31T03:00:00",
@@ -30,7 +32,8 @@
     "gdd_gain": 2.2,
     "status": "Restricted",
     "humidity": "70",
-    "pressure": "1021"
+    "pressure": "1021",
+    "rolling_gdd": 3.2
   },
   {
     "timestamp": "2026-03-31T06:00:00",
@@ -41,7 +44,8 @@
     "gdd_gain": 1.8,
     "status": "Restricted",
     "humidity": "75",
-    "pressure": "1020"
+    "pressure": "1020",
+    "rolling_gdd": 3.0
   },
   {
     "timestamp": "2026-03-31T09:00:00",
@@ -52,7 +56,8 @@
     "gdd_gain": 5.5,
     "status": "Optimal",
     "humidity": "60",
-    "pressure": "1021"
+    "pressure": "1021",
+    "rolling_gdd": 3.65
   },
   {
     "timestamp": "2026-03-31T12:00:00",
@@ -63,7 +68,8 @@
     "gdd_gain": 9.2,
     "status": "Optimal",
     "humidity": "50",
-    "pressure": "1022"
+    "pressure": "1022",
+    "rolling_gdd": 5.5
   },
   {
     "timestamp": "2026-03-31T15:00:00",
@@ -74,7 +80,8 @@
     "gdd_gain": 10.8,
     "status": "Optimal",
     "humidity": "45",
-    "pressure": "1021"
+    "pressure": "1021",
+    "rolling_gdd": 6.3
   },
   {
     "timestamp": "2026-03-31T18:00:00",
@@ -85,7 +92,8 @@
     "gdd_gain": 8.5,
     "status": "Optimal",
     "humidity": "50",
-    "pressure": "1022"
+    "pressure": "1022",
+    "rolling_gdd": 6.3
   },
   {
     "timestamp": "2026-03-31T21:00:00",
@@ -96,7 +104,8 @@
     "gdd_gain": 5.2,
     "status": "Optimal",
     "humidity": "55",
-    "pressure": "1023"
+    "pressure": "1023",
+    "rolling_gdd": 6.3
   },
   {
     "timestamp": "2026-04-01T00:00:00",
@@ -107,7 +116,8 @@
     "gdd_gain": 4.5,
     "status": "Restricted",
     "humidity": "60",
-    "pressure": "1024"
+    "pressure": "1024",
+    "rolling_gdd": 6.3
   },
   {
     "timestamp": "2026-04-01T03:00:00",
@@ -118,7 +128,8 @@
     "gdd_gain": 3.2,
     "status": "Restricted",
     "humidity": "65",
-    "pressure": "1023"
+    "pressure": "1023",
+    "rolling_gdd": 6.3
   },
   {
     "timestamp": "2026-04-01T06:00:00",
@@ -129,7 +140,8 @@
     "gdd_gain": 2.8,
     "status": "Restricted",
     "humidity": "70",
-    "pressure": "1022"
+    "pressure": "1022",
+    "rolling_gdd": 6.3
   },
   {
     "timestamp": "2026-04-01T09:00:00",
@@ -140,7 +152,8 @@
     "gdd_gain": 6.5,
     "status": "Optimal",
     "humidity": "55",
-    "pressure": "1023"
+    "pressure": "1023",
+    "rolling_gdd": 6.8
   },
   {
     "timestamp": "2026-04-01T12:00:00",
@@ -151,7 +164,8 @@
     "gdd_gain": 10.2,
     "status": "Optimal",
     "humidity": "45",
-    "pressure": "1024"
+    "pressure": "1024",
+    "rolling_gdd": 6.8
   },
   {
     "timestamp": "2026-04-01T15:00:00",
@@ -162,7 +176,8 @@
     "gdd_gain": 11.8,
     "status": "Optimal",
     "humidity": "40",
-    "pressure": "1023"
+    "pressure": "1023",
+    "rolling_gdd": 7.3
   },
   {
     "timestamp": "2026-04-01T18:00:00",
@@ -173,7 +188,8 @@
     "gdd_gain": 9.5,
     "status": "Optimal",
     "humidity": "45",
-    "pressure": "1024"
+    "pressure": "1024",
+    "rolling_gdd": 7.3
   },
   {
     "timestamp": "2026-04-01T21:00:00",
@@ -184,7 +200,8 @@
     "gdd_gain": 6.2,
     "status": "Optimal",
     "humidity": "50",
-    "pressure": "1025"
+    "pressure": "1025",
+    "rolling_gdd": 7.3
   },
   {
     "timestamp": "2026-04-02T00:00:00",
@@ -195,7 +212,8 @@
     "gdd_gain": 5.5,
     "status": "Restricted",
     "humidity": "55",
-    "pressure": "1026"
+    "pressure": "1026",
+    "rolling_gdd": 7.3
   },
   {
     "timestamp": "2026-04-02T03:00:00",
@@ -206,7 +224,8 @@
     "gdd_gain": 4.2,
     "status": "Restricted",
     "humidity": "60",
-    "pressure": "1025"
+    "pressure": "1025",
+    "rolling_gdd": 7.3
   },
   {
     "timestamp": "2026-04-02T06:00:00",
@@ -217,7 +236,8 @@
     "gdd_gain": 3.8,
     "status": "Restricted",
     "humidity": "65",
-    "pressure": "1024"
+    "pressure": "1024",
+    "rolling_gdd": 7.3
   },
   {
     "timestamp": "2026-04-02T09:00:00",
@@ -228,7 +248,8 @@
     "gdd_gain": 7.5,
     "status": "Optimal",
     "humidity": "50",
-    "pressure": "1025"
+    "pressure": "1025",
+    "rolling_gdd": 7.8
   },
   {
     "timestamp": "2026-04-02T12:00:00",
@@ -239,7 +260,8 @@
     "gdd_gain": 11.2,
     "status": "Optimal",
     "humidity": "40",
-    "pressure": "1026"
+    "pressure": "1026",
+    "rolling_gdd": 7.8
   },
   {
     "timestamp": "2026-04-02T15:00:00",
@@ -250,7 +272,8 @@
     "gdd_gain": 12.8,
     "status": "Optimal",
     "humidity": "35",
-    "pressure": "1025"
+    "pressure": "1025",
+    "rolling_gdd": 8.3
   },
   {
     "timestamp": "2026-04-02T18:00:00",
@@ -261,7 +284,8 @@
     "gdd_gain": 10.5,
     "status": "Optimal",
     "humidity": "40",
-    "pressure": "1026"
+    "pressure": "1026",
+    "rolling_gdd": 8.3
   },
   {
     "timestamp": "2026-04-02T21:00:00",
@@ -272,7 +296,8 @@
     "gdd_gain": 7.2,
     "status": "Optimal",
     "humidity": "45",
-    "pressure": "1027"
+    "pressure": "1027",
+    "rolling_gdd": 8.3
   },
   {
     "timestamp": "2026-04-03T00:00:00",
@@ -283,7 +308,8 @@
     "gdd_gain": 6.5,
     "status": "Restricted",
     "humidity": "50",
-    "pressure": "1028"
+    "pressure": "1028",
+    "rolling_gdd": 8.3
   },
   {
     "timestamp": "2026-04-03T03:00:00",
@@ -294,7 +320,8 @@
     "gdd_gain": 5.2,
     "status": "Restricted",
     "humidity": "55",
-    "pressure": "1027"
+    "pressure": "1027",
+    "rolling_gdd": 8.3
   },
   {
     "timestamp": "2026-04-03T06:00:00",
@@ -305,7 +332,8 @@
     "gdd_gain": 4.8,
     "status": "Restricted",
     "humidity": "60",
-    "pressure": "1026"
+    "pressure": "1026",
+    "rolling_gdd": 8.3
   },
   {
     "timestamp": "2026-04-03T09:00:00",
@@ -316,7 +344,8 @@
     "gdd_gain": 8.5,
     "status": "Optimal",
     "humidity": "45",
-    "pressure": "1027"
+    "pressure": "1027",
+    "rolling_gdd": 8.8
   },
   {
     "timestamp": "2026-04-03T12:00:00",
@@ -327,7 +356,8 @@
     "gdd_gain": 12.2,
     "status": "Optimal",
     "humidity": "35",
-    "pressure": "1028"
+    "pressure": "1028",
+    "rolling_gdd": 8.8
   },
   {
     "timestamp": "2026-04-03T15:00:00",
@@ -338,7 +368,8 @@
     "gdd_gain": 13.8,
     "status": "Optimal",
     "humidity": "30",
-    "pressure": "1027"
+    "pressure": "1027",
+    "rolling_gdd": 9.3
   },
   {
     "timestamp": "2026-04-03T18:00:00",
@@ -349,7 +380,8 @@
     "gdd_gain": 11.5,
     "status": "Optimal",
     "humidity": "35",
-    "pressure": "1028"
+    "pressure": "1028",
+    "rolling_gdd": 9.3
   },
   {
     "timestamp": "2026-04-03T21:00:00",
@@ -360,7 +392,8 @@
     "gdd_gain": 8.2,
     "status": "Optimal",
     "humidity": "40",
-    "pressure": "1029"
+    "pressure": "1029",
+    "rolling_gdd": 9.3
   },
   {
     "timestamp": "2026-04-03T05:52:33.359373",
@@ -371,7 +404,8 @@
     "gdd_gain": 0,
     "status": "Restricted",
     "humidity": "63.8",
-    "pressure": "1013.2"
+    "pressure": "1013.2",
+    "rolling_gdd": 2.85
   },
   {
     "timestamp": "2026-04-03T08:36:30.514445",
@@ -382,7 +416,8 @@
     "gdd_gain": 0.8,
     "status": "Restricted",
     "humidity": "35.6",
-    "pressure": "1013.3"
+    "pressure": "1013.3",
+    "rolling_gdd": 2.85
   },
   {
     "timestamp": "2026-04-03T11:25:51.550190",
@@ -393,7 +428,8 @@
     "gdd_gain": 2.5,
     "status": "Restricted",
     "humidity": "40.6",
-    "pressure": "1013.1"
+    "pressure": "1013.1",
+    "rolling_gdd": 2.85
   },
   {
     "timestamp": "2026-04-03T14:29:41.184675",
@@ -404,7 +440,8 @@
     "gdd_gain": 3.4,
     "status": "Restricted",
     "humidity": "40.6",
-    "pressure": "1012.6"
+    "pressure": "1012.6",
+    "rolling_gdd": 2.85
   },
   {
     "timestamp": "2026-04-03T17:02:03.179208",
@@ -415,7 +452,8 @@
     "gdd_gain": 2.4,
     "status": "Restricted",
     "humidity": "43.7",
-    "pressure": "1012.7"
+    "pressure": "1012.7",
+    "rolling_gdd": 2.85
   },
   {
     "timestamp": "2026-04-03T19:56:17.507012",
@@ -426,7 +464,8 @@
     "gdd_gain": 0,
     "status": "Restricted",
     "humidity": "53.7",
-    "pressure": "1014.2"
+    "pressure": "1014.2",
+    "rolling_gdd": 2.85
   },
   {
     "timestamp": "2026-04-03T22:02:58.422142",
@@ -437,6 +476,7 @@
     "gdd_gain": 0,
     "status": "Restricted",
     "humidity": "58.5",
-    "pressure": "1014.8"
+    "pressure": "1014.8",
+    "rolling_gdd": 2.85
   }
 ]
