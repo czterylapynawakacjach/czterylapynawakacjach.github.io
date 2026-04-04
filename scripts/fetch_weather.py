@@ -139,8 +139,8 @@ def update_stores():
     window = [i for i in telemetry if datetime.fromisoformat(i['timestamp']).replace(tzinfo=None) >= window_start]
     
     if window:
-        r_max = max(i['temp'] for i in window)
-        r_min = min(i['temp'] for i in window)
+        r_max = max(float(i['temp']) for i in window)
+        r_min = min(float(i['temp']) for i in window)
         telemetry[-1]['rolling_gdd'] = round(max(((r_max + r_min) / 2) - BASE_TEMP, 0), 2)
     else:
         telemetry[-1]['rolling_gdd'] = 0

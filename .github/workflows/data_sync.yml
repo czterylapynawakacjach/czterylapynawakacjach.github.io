@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "BeeBot"
           git config user.email "actions@github.com"
-          git add src/data/hive_metrics.json
+          git add src/data/telemetry.json src/data/archive.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update hive telemetry data" && git push)
 
       - name: Setup Node
