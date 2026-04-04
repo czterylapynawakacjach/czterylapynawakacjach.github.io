@@ -1,0 +1,42 @@
+[
+  {
+    "date": "2026-03-30",
+    "t_max": 19.8,
+    "t_min": 10.8,
+    "avg_pressure": 1019.5,
+    "total_rain": 0.0,
+    "avg_humidity": 61.2,
+    "daily_gdd": 5.3,
+    "cumulative_gdd": 5.3
+  },
+  {
+    "date": "2026-03-31",
+    "t_max": 20.8,
+    "t_min": 11.8,
+    "avg_pressure": 1021.5,
+    "total_rain": 0.0,
+    "avg_humidity": 58.1,
+    "daily_gdd": 6.3,
+    "cumulative_gdd": 11.6
+  },
+  {
+    "date": "2026-04-01",
+    "t_max": 21.8,
+    "t_min": 12.8,
+    "avg_pressure": 1023.5,
+    "total_rain": 0.0,
+    "avg_humidity": 53.7,
+    "daily_gdd": 7.3,
+    "cumulative_gdd": 12.5
+  },
+  {
+    "date": "2026-04-02",
+    "t_max": 22.8,
+    "t_min": 13.8,
+    "avg_pressure": 1025.5,
+    "total_rain": 0.0,
+    "avg_humidity": 46.2,
+    "daily_gdd": 8.3,
+    "cumulative_gdd": 20.8
+  }
+]

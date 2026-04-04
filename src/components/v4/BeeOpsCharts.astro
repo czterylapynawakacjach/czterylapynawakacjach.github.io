@@ -1,38 +1,30 @@
 ---
-import metrics from '../../data/hive_metrics.json';
+import telemetry from '../../data/telemetry.json';
+import archive from '../../data/archive.json';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-// Prepare data for Chart.js
-const labels = metrics.map(m => new Date(m.timestamp).toLocaleString(lang === 'pl' ? 'pl-PL' : 'en-US', { 
+// 1. Display Windows
+const displayTelemetry = telemetry.slice(-56); // Last 7 days
+const displayArchive = archive.slice(-14);     // Last 14 days
+
+// 2. Prepare data for Intra-day Charts (last 7 days)
+const labels = displayTelemetry.map(m => new Date(m.timestamp).toLocaleString(lang === 'pl' ? 'pl-PL' : 'en-US', { 
   month: 'short', day: 'numeric', hour: '2-digit' 
 }));
 
-const temps = metrics.map(m => m.temp);
-const rains = metrics.map(m => m.rain);
-const winds = metrics.map(m => m.wind);
-const pressures = metrics.map(m => parseInt(m.pressure));
+const temps = displayTelemetry.map(m => m.temp);
+const rains = displayTelemetry.map(m => m.rain);
+const winds = displayTelemetry.map(m => m.wind);
+const pressures = displayTelemetry.map(m => parseInt(m.pressure));
+const rollingGDD = displayTelemetry.map(m => m.rolling_gdd || 0);
 
-// Calculate Cumulative GDD
-let cumulativeGDD = 0;
-const gddData = metrics.map(m => {
-  cumulativeGDD += m.gdd_gain;
-  return cumulativeGDD;
-});
-
-// Calculate "Ghost" GDD (Historical simulation - slightly slower growth)
-let ghostGDD = 0;
-const ghostData = metrics.map(m => {
-  ghostGDD += m.gdd_gain * 0.85;
-  return ghostGDD;
-});
-
-// Daily Min/Max for Thermal Envelope
-const days = [...new Set(metrics.map(m => m.date))];
+// 3. Thermal Envelope (from 7 days telemetry)
+const days = [...new Set(displayTelemetry.map(m => m.date))];
 const dailyMinMax = days.map(day => {
-    const dayTemps = metrics.filter(m => m.date === day).map(m => m.temp);
+    const dayTemps = displayTelemetry.filter(m => m.date === day).map(m => m.temp);
     return {
         date: day,
         min: Math.min(...dayTemps),
@@ -40,9 +32,21 @@ const dailyMinMax = days.map(day => {
     };
 });
 
-// Map envelope to all 40 points
-const envelopeMin = metrics.map(m => dailyMinMax.find(d => d.date === m.date).min);
-const envelopeMax = metrics.map(m => dailyMinMax.find(d => d.date === m.date).max);
+const envelopeMin = displayTelemetry.map(m => dailyMinMax.find(d => d.date === m.date).min);
+const envelopeMax = displayTelemetry.map(m => dailyMinMax.find(d => d.date === m.date).max);
+
+// 4. Cumulative GDD (from last 14 days archive)
+const archiveLabels = displayArchive.map(a => new Date(a.date).toLocaleDateString(lang === 'pl' ? 'pl-PL' : 'en-US', {
+    month: 'short', day: 'numeric'
+}));
+const cumulativeGDD = displayArchive.map(a => a.cumulative_gdd);
+
+// Prepare "Ghost" GDD (Historical simulation - 15% slower)
+const ghostData = displayArchive.map(a => roundToTwo(a.cumulative_gdd * 0.85));
+
+function roundToTwo(num: number) {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
 
 // Translation Strings for Script
 const chartStrings = {
@@ -50,7 +54,7 @@ const chartStrings = {
   dailyMax: t('v4.beeops.charts.labels.daily_max'),
   dailyMin: t('v4.beeops.charts.labels.daily_min'),
   rain: t('v4.beeops.charts.labels.rain'),
-  gddAccumulation: t('v4.beeops.charts.labels.gdd_accumulation'),
+  rollingGDD: 'Rolling 24h GDD', // Could add to ui.ts if needed
   windSpeed: t('v4.beeops.charts.labels.wind_speed'),
   pressure: t('v4.beeops.charts.labels.pressure'),
   currentYear: t('v4.beeops.charts.labels.current_year'),
@@ -97,7 +101,7 @@ const chartStrings = {
 
   <!-- 5. Cumulative GDD Comparison -->
   <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')}</h3>
+    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')} (14 Days)</h3>
     <div class="aspect-[21/9] w-full">
       <canvas id="gddChart"></canvas>
     </div>
@@ -106,7 +110,7 @@ const chartStrings = {
 </div>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script is:inline define:vars={{ labels, temps, envelopeMin, envelopeMax, rains, gddData, winds, pressures, ghostData, chartStrings }}>
+<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, cumulativeGDD, ghostData, chartStrings }}>
   document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.family = 'Inter';
     Chart.defaults.font.weight = '900';
@@ -133,7 +137,7 @@ const chartStrings = {
             data: envelopeMax,
             borderColor: 'rgba(0,0,0,0.05)',
             backgroundColor: 'rgba(0,0,0,0.05)',
-            fill: '+1', // Fill down to Daily Min
+            fill: '+1',
             pointRadius: 0,
             borderWidth: 1,
             zIndex: 1
@@ -158,14 +162,14 @@ const chartStrings = {
         labels: labels,
         datasets: [
           { type: 'bar', label: chartStrings.rain, data: rains, backgroundColor: '#3B82F6', order: 2 },
-          { type: 'line', label: chartStrings.gddAccumulation, data: gddData, borderColor: '#FFBF00', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
+          { type: 'line', label: chartStrings.rollingGDD, data: rollingGDD, borderColor: '#FFBF00', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
         ]
       },
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
           y: { title: { display: true, text: chartStrings.rain } },
-          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: chartStrings.gddAccumulation } }
+          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Rolling 24h GDD' } }
         },
         plugins: { legend: { display: false } } 
       }
@@ -180,12 +184,7 @@ const chartStrings = {
       },
       options: { 
         responsive: true, maintainAspectRatio: false,
-        plugins: { 
-            legend: { display: false },
-            annotation: { // Manual threshold line since we don't have the plugin loaded
-                annotations: { line1: { type: 'line', yMin: 20, borderColor: 'red', borderWidth: 2 } }
-            }
-        },
+        plugins: { legend: { display: false } },
         scales: { y: { beginAtZero: true, title: { display: true, text: 'km/h' } } }
       }
     });
@@ -211,9 +210,9 @@ const chartStrings = {
     new Chart(document.getElementById('gddChart'), {
       type: 'line',
       data: {
-        labels: labels,
+        labels: archiveLabels,
         datasets: [
-          { label: chartStrings.currentYear, data: gddData, borderColor: '#FFBF00', borderWidth: 6, tension: 0.4 },
+          { label: chartStrings.currentYear, data: cumulativeGDD, borderColor: '#FFBF00', borderWidth: 6, tension: 0.4 },
           { label: chartStrings.historicalGhost, data: ghostData, borderColor: 'rgba(45,45,45,0.1)', borderWidth: 4, borderDash: [5, 5], tension: 0.4, fill: true, backgroundColor: 'rgba(45,45,45,0.02)' }
         ]
       },
