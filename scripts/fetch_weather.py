@@ -115,18 +115,20 @@ def update_stores():
             optimal_slots = sum(1 for i in yesterday_data if i['status'] == "Optimal")
             flight_hours = optimal_slots * 3 # Estimation
             
-            archive.append({
-                "date": yesterday_date,
-                "t_max": t_max,
-                "t_min": t_min,
-                "avg_pressure": round(avg_p, 1),
-                "total_rain": round(total_r, 1),
-                "avg_humidity": round(avg_h, 1),
-                "daily_gdd": round(daily_gdd, 2),
-                "cumulative_gdd": round(last_cumulative + daily_gdd, 2),
-                "flight_hours": flight_hours,
-                "avg_delta_t": round(sum(float(i.get('delta_t', 0)) for i in yesterday_data) / len(yesterday_data), 1)
-            })
+            # Prevent duplicate date entries in archive
+            if not any(a['date'] == yesterday_date for a in archive):
+                archive.append({
+                    "date": yesterday_date,
+                    "t_max": t_max,
+                    "t_min": t_min,
+                    "avg_pressure": round(avg_p, 1),
+                    "total_rain": round(total_r, 1),
+                    "avg_humidity": round(avg_h, 1),
+                    "daily_gdd": round(daily_gdd, 2),
+                    "cumulative_gdd": round(last_cumulative + daily_gdd, 2),
+                    "flight_hours": flight_hours,
+                    "avg_delta_t": round(sum(float(i.get('delta_t', 0)) for i in yesterday_data) / len(yesterday_data), 1)
+                })
             
             if len(archive) > MAX_ARCHIVE:
                 archive = archive[-MAX_ARCHIVE:]
