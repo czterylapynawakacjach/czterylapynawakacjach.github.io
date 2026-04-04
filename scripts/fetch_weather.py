@@ -47,7 +47,14 @@ def update_stores():
     pressure = float(raw_data['cisnienie'] or 0)
     humidity = float(raw_data['wilgotnosc_wzgledna'] or 0)
     
-    is_flyable = t_now > 14 and wind_kmh < 20 and rain_mm == 0
+    # 3-Tier Status Logic
+    if rain_mm > 0 or t_now < 10:
+        status = "Restricted"
+    elif t_now > 14 and wind_kmh < 20:
+        status = "Optimal"
+    else:
+        status = "Marginal"
+
     delta_t = round(t_now * (1 - (humidity / 100)), 1)
 
     new_entry = {
@@ -56,7 +63,7 @@ def update_stores():
         "temp": t_now,
         "wind": wind_kmh,
         "rain": rain_mm,
-        "status": "Optimal" if is_flyable else "Restricted",
+        "status": status,
         "humidity": humidity,
         "pressure": pressure,
         "delta_t": delta_t
@@ -81,6 +88,10 @@ def update_stores():
             daily_gdd = max(((t_max + t_min) / 2) - BASE_TEMP, 0)
             last_cumulative = archive[-1]['cumulative_gdd'] if archive else 0
             
+            # Count optimal 3-hour slots
+            optimal_slots = sum(1 for i in yesterday_data if i['status'] == "Optimal")
+            flight_hours = optimal_slots * 3
+            
             archive.append({
                 "date": yesterday_date,
                 "t_max": t_max,
@@ -89,7 +100,9 @@ def update_stores():
                 "total_rain": round(total_r, 1),
                 "avg_humidity": round(avg_h, 1),
                 "daily_gdd": round(daily_gdd, 2),
-                "cumulative_gdd": round(last_cumulative + daily_gdd, 2)
+                "cumulative_gdd": round(last_cumulative + daily_gdd, 2),
+                "flight_hours": flight_hours,
+                "avg_delta_t": round(sum(i.get('delta_t', 0) for i in yesterday_data) / len(yesterday_data), 1)
             })
             
             if len(archive) > MAX_ARCHIVE:
@@ -99,8 +112,6 @@ def update_stores():
                 json.dump(archive, f, indent=2)
 
     # 4. Telemetry Update & Rolling 24h Window
-    # If we already have an entry for exactly this hour (unlikely but safe), replace it
-    # Otherwise append
     telemetry.append(new_entry)
     
     # Calculate Rolling GDD using sliding 24-hour window
@@ -122,7 +133,7 @@ def update_stores():
     with open(TELEMETRY_FILE, 'w') as f:
         json.dump(telemetry, f, indent=2)
 
-    print(f"Successfully updated {new_entry['timestamp']}. Rolling GDD: {telemetry[-1]['rolling_gdd']}")
+    print(f"Successfully updated {new_entry['timestamp']}. Status: {new_entry['status']}")
 
 if __name__ == "__main__":
     update_stores()

@@ -8,6 +8,7 @@ const t = useTranslations(lang);
 
 // 1. Display Windows
 const displayTelemetry = telemetry.slice(-56); // Last 7 days
+const displayTimeline = telemetry.slice(-16);  // Last 48 hours
 const displayArchive = archive.slice(-14);     // Last 14 days
 
 // 2. Prepare data for Intra-day Charts (last 7 days)
@@ -36,11 +37,13 @@ const dailyMinMax = days.map(day => {
 const envelopeMin = displayTelemetry.map(m => dailyMinMax.find(d => d.date === m.date).min);
 const envelopeMax = displayTelemetry.map(m => dailyMinMax.find(d => d.date === m.date).max);
 
-// 4. Cumulative GDD (from last 14 days archive)
+// 4. Cumulative GDD & Flight Hours (from last 14 days archive)
 const archiveLabels = displayArchive.map(a => new Date(a.date).toLocaleDateString(lang === 'pl' ? 'pl-PL' : 'en-US', {
     month: 'short', day: 'numeric'
 }));
 const cumulativeGDD = displayArchive.map(a => a.cumulative_gdd);
+const dailyGDD = displayArchive.map(a => a.daily_gdd);
+const flightHours = displayArchive.map(a => a.flight_hours || 0);
 
 // Prepare "Ghost" GDD (Historical simulation - 15% slower)
 const ghostData = displayArchive.map(a => roundToTwo(a.cumulative_gdd * 0.85));
@@ -48,6 +51,20 @@ const ghostData = displayArchive.map(a => roundToTwo(a.cumulative_gdd * 0.85));
 function roundToTwo(num: number) {
     return Math.round((num + Number.EPSILON) * 100) / 100;
 }
+
+// 5. Starvation Alert Logic
+// Trigger if cumulative GDD > 10 (bloom started) and total flight hours in last 3 days < 6
+const recentArchive = archive.slice(-3);
+const recentFlightHours = recentArchive.reduce((acc, curr) => acc + (curr.flight_hours || 0), 0);
+const bloomStarted = archive[archive.length - 1]?.cumulative_gdd > 10;
+const showStarvationWarning = bloomStarted && recentFlightHours < 6;
+
+// 6. Foraging Timeline Colors
+const getStatusColor = (status: string) => {
+  if (status === 'Optimal') return 'bg-green-500';
+  if (status === 'Marginal') return 'bg-amber-500';
+  return 'bg-red-500';
+};
 
 // Translation Strings for Script
 const chartStrings = {
@@ -61,68 +78,111 @@ const chartStrings = {
   currentYear: t('v4.beeops.charts.labels.current_year'),
   historicalGhost: t('v4.beeops.charts.labels.historical_ghost'),
   deltaT: 'Delta T',
+  flightHours: t('v4.beeops.foraging.hours.title'),
+  dailyGDD: t('v4.beeops.charts.labels.gdd_accumulation'),
 };
 ---
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-24">
-  <!-- 1. Thermal Envelope -->
-  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.thermal.title')}</h3>
-    <div class="aspect-video w-full">
-      <canvas id="thermalChart"></canvas>
+<div class="space-y-12">
+  {showStarvationWarning && (
+    <div class="bg-red-500 text-white p-6 rounded-3xl shadow-2xl animate-pulse flex items-center gap-6 border-4 border-white/20">
+      <span class="text-4xl">⚠️</span>
+      <div>
+        <h4 class="text-xl font-black uppercase tracking-tighter">{t('v4.beeops.warning.starvation')}</h4>
+        <p class="text-sm font-bold opacity-80 uppercase tracking-widest mt-1">High Bloom / Low Flight Windows detected. Check honey stores.</p>
+      </div>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.thermal.desc')}</p>
+  )}
+
+  <!-- Foraging Timeline Ribbon -->
+  <div class="honey-card p-8 bg-white border-4 border-charcoal">
+    <h3 class="text-xl font-black text-charcoal mb-8 uppercase italic">{t('v4.beeops.foraging.timeline.title')}</h3>
+    <div class="flex h-12 w-full gap-1 rounded-full overflow-hidden">
+      {displayTimeline.map((m) => (
+        <div 
+          class:list={["flex-1 transition-all hover:scale-y-110 cursor-help relative group", getStatusColor(m.status)]}
+        >
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-3 py-2 bg-charcoal text-white text-[0.6rem] font-black rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+            {new Date(m.timestamp).getHours()}:00 - {m.status}
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="flex justify-between mt-4 text-[0.6rem] font-black text-charcoal/30 uppercase tracking-widest">
+      <span>48H AGO</span>
+      <span>TODAY</span>
+    </div>
   </div>
 
-  <!-- 2. Nectar Washout -->
-  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.washout.title')}</h3>
-    <div class="aspect-video w-full">
-      <canvas id="washoutChart"></canvas>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <!-- 1. Thermal Envelope -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.thermal.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="thermalChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.thermal.desc')}</p>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.washout.desc')}</p>
-  </div>
 
-  <!-- 3. Nectar Flow Window (Delta T) -->
-  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.deltat.title')}</h3>
-    <div class="aspect-video w-full">
-      <canvas id="deltaTChart"></canvas>
+    <!-- 2. Nectar Washout -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.washout.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="washoutChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.washout.desc')}</p>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.deltat.desc')}</p>
-  </div>
 
-  <!-- 4. Foraging Throughput -->
-  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
-    <div class="aspect-video w-full">
-      <canvas id="windChart"></canvas>
+    <!-- 3. Nectar Flow Window (Delta T) -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.deltat.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="deltaTChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.deltat.desc')}</p>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
-  </div>
 
-  <!-- 5. Barometric Panic -->
-  <div class="honey-card p-4 md:p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
-    <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
-    <div class="aspect-video w-full">
-      <canvas id="pressureChart"></canvas>
+    <!-- 4. Foraging Throughput -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="windChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
     </div>
-    <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.panic.desc')}</p>
-  </div>
 
-  <!-- 6. Cumulative GDD Comparison -->
-  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 relative group overflow-hidden">
-    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')} (14 Days)</h3>
-    <div class="aspect-[21/9] w-full">
-      <canvas id="gddChart"></canvas>
+    <!-- 5. Barometric Panic -->
+    <div class="honey-card p-4 md:p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
+      <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="pressureChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.panic.desc')}</p>
     </div>
-    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center italic">{t('v4.beeops.charts.gdd.desc')}</p>
+
+    <!-- 6. Seasonal GDD "Ghost" -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.gdd.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="gddChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight italic">{t('v4.beeops.charts.gdd.desc')}</p>
+    </div>
+
+    <!-- 7. Flight Hours vs GDD (Archive View) -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.foraging.hours.title')} vs Daily GDD</h3>
+      <div class="aspect-[21/9] w-full">
+        <canvas id="flightGddChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center">Quantifying yield potential. If bars are low but GDD is high, the "Hunger Gap" is widening.</p>
+    </div>
   </div>
 </div>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script is:inline src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, cumulativeGDD, ghostData, chartStrings }}>
+<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, cumulativeGDD, dailyGDD, flightHours, ghostData, chartStrings }}>
   document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.family = 'Inter';
     Chart.defaults.font.weight = '900';
@@ -288,6 +348,25 @@ const chartStrings = {
         ]
       },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // 7. Flight Hours vs Daily GDD
+    new Chart(document.getElementById('flightGddChart'), {
+      data: {
+        labels: archiveLabels,
+        datasets: [
+          { type: 'bar', label: chartStrings.flightHours, data: flightHours, backgroundColor: '#FFBF00', order: 2 },
+          { type: 'line', label: chartStrings.dailyGDD, data: dailyGDD, borderColor: '#2D2D2D', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
+        ]
+      },
+      options: { 
+        responsive: true, maintainAspectRatio: false, 
+        scales: { 
+          y: { beginAtZero: true, title: { display: true, text: 'Hours' } },
+          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Daily GDD' } }
+        },
+        plugins: { legend: { position: 'bottom' } } 
+      }
     });
   });
 </script>
