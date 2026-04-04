@@ -56,7 +56,7 @@ def update_stores():
         return
 
     # 1. Standardize Inputs & Logic
-    now_pl = datetime.now(POLAND_TZ)
+    now_pl = datetime.now(POLAND_TZ).replace(tzinfo=None) # Use naive for JSON compatibility
     t_now = float(raw_data['temperatura'])
     wind_kmh = round(float(raw_data['predkosc_wiatru']) * 3.6, 1)
     rain_mm = float(raw_data['suma_opadu'] or 0)
@@ -135,7 +135,8 @@ def update_stores():
     # Calculate Rolling GDD using sliding 24-hour window
     now_dt = datetime.fromisoformat(new_entry['timestamp'])
     window_start = now_dt - timedelta(hours=24)
-    window = [i for i in telemetry if datetime.fromisoformat(i['timestamp']) >= window_start]
+    # Ensure we compare naive datetimes
+    window = [i for i in telemetry if datetime.fromisoformat(i['timestamp']).replace(tzinfo=None) >= window_start]
     
     if window:
         r_max = max(i['temp'] for i in window)

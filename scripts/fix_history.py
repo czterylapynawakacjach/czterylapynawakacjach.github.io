@@ -54,10 +54,10 @@ def fix_data():
         telemetry[i]['delta_t'] = round(temp * (1 - (humidity / 100)), 1)
         telemetry[i]['foraging_intensity'] = calculate_intensity(temp, wind, rain)
 
-        # Rolling GDD
-        now_dt = datetime.fromisoformat(telemetry[i]['timestamp'].replace('Z', ''))
+        # Rolling GDD - ensure naive comparison
+        now_dt = datetime.fromisoformat(telemetry[i]['timestamp']).replace(tzinfo=None)
         window_start = now_dt - timedelta(hours=24)
-        window = [t for t in telemetry[:i+1] if datetime.fromisoformat(t['timestamp'].replace('Z', '')) >= window_start]
+        window = [t for t in telemetry[:i+1] if datetime.fromisoformat(t['timestamp']).replace(tzinfo=None) >= window_start]
         
         if window:
             r_max = max(float(t['temp']) for t in window)
