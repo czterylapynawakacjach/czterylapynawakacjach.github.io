@@ -22,6 +22,7 @@ const winds = displayTelemetry.map(m => m.wind);
 const pressures = displayTelemetry.map(m => parseInt(m.pressure));
 const rollingGDD = displayTelemetry.map(m => m.rolling_gdd || 0);
 const deltaTs = displayTelemetry.map(m => m.delta_t || 0);
+const foragingIntensity = displayTelemetry.map(m => m.foraging_intensity || 0);
 
 // 3. Thermal Envelope (from 7 days telemetry)
 const days = [...new Set(displayTelemetry.map(m => m.date))];
@@ -53,7 +54,6 @@ function roundToTwo(num: number) {
 }
 
 // 5. Starvation Alert Logic
-// Trigger if cumulative GDD > 10 (bloom started) and total flight hours in last 3 days < 6
 const recentArchive = archive.slice(-3);
 const recentFlightHours = recentArchive.reduce((acc, curr) => acc + (curr.flight_hours || 0), 0);
 const bloomStarted = archive[archive.length - 1]?.cumulative_gdd > 10;
@@ -80,12 +80,13 @@ const chartStrings = {
   deltaT: 'Delta T',
   flightHours: t('v4.beeops.foraging.hours.title'),
   dailyGDD: t('v4.beeops.charts.labels.gdd_accumulation'),
+  intensity: t('v4.beeops.charts.labels.intensity'),
 };
 ---
 
 <div class="space-y-12">
   {showStarvationWarning && (
-    <div class="bg-red-500 text-white p-6 rounded-3xl shadow-2xl animate-pulse flex items-center gap-6 border-4 border-white/20">
+    <div class="bg-red-500 text-white p-6 rounded-3xl shadow-2xl animate-pulse flex items-center gap-6 border-4 border-white/20 mx-auto w-full max-w-4xl">
       <span class="text-4xl">⚠️</span>
       <div>
         <h4 class="text-xl font-black uppercase tracking-tighter">{t('v4.beeops.warning.starvation')}</h4>
@@ -95,7 +96,7 @@ const chartStrings = {
   )}
 
   <!-- Foraging Timeline Ribbon -->
-  <div class="honey-card p-8 bg-white border-4 border-charcoal">
+  <div class="honey-card p-6 md:p-8 bg-white border-4 border-charcoal max-w-4xl mx-auto">
     <h3 class="text-xl font-black text-charcoal mb-8 uppercase italic">{t('v4.beeops.foraging.timeline.title')}</h3>
     <div class="flex h-12 w-full gap-1 rounded-full overflow-hidden">
       {displayTimeline.map((m) => (
@@ -142,11 +143,11 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.deltat.desc')}</p>
     </div>
 
-    <!-- 4. Foraging Throughput -->
+    <!-- 4. Foraging Intensity Index (FIXED) -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
       <div class="aspect-video w-full">
-        <canvas id="windChart"></canvas>
+        <canvas id="intensityChart"></canvas>
       </div>
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
     </div>
@@ -162,11 +163,11 @@ const chartStrings = {
 
     <!-- 6. Seasonal GDD "Ghost" -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.gdd.title')}</h3>
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')}</h3>
       <div class="aspect-video w-full">
         <canvas id="gddChart"></canvas>
       </div>
-      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight italic">{t('v4.beeops.charts.gdd.desc')}</p>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center italic">{t('v4.beeops.charts.gdd.desc')}</p>
     </div>
 
     <!-- 7. Flight Hours vs GDD (Archive View) -->
@@ -182,7 +183,7 @@ const chartStrings = {
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script is:inline src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, cumulativeGDD, dailyGDD, flightHours, ghostData, chartStrings }}>
+<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, foragingIntensity, cumulativeGDD, dailyGDD, flightHours, ghostData, chartStrings }}>
   document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.family = 'Inter';
     Chart.defaults.font.weight = '900';
@@ -234,14 +235,14 @@ const chartStrings = {
         labels: labels,
         datasets: [
           { type: 'bar', label: chartStrings.rain, data: rains, backgroundColor: '#3B82F6', order: 2 },
-          { type: 'line', label: chartStrings.rollingGDD, data: rollingGDD, borderColor: '#FFBF00', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
+          { type: 'line', label: 'Rolling GDD', data: rollingGDD, borderColor: '#FFBF00', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
         ]
       },
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
-          y: { title: { display: true, text: chartStrings.rain } },
-          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Rolling 24h GDD' } }
+          y: { title: { display: true, text: 'Rain mm' } },
+          y1: { position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'GDD' } }
         },
         plugins: { legend: { display: false } } 
       }
@@ -287,36 +288,28 @@ const chartStrings = {
       }
     });
 
-    // 4. Foraging Throughput
-    new Chart(document.getElementById('windChart'), {
+    // 4. Foraging Intensity Index (FIXED)
+    new Chart(document.getElementById('intensityChart'), {
       type: 'bar',
       data: {
         labels: labels,
-        datasets: [{ label: chartStrings.windSpeed, data: winds, backgroundColor: '#2D2D2D' }]
+        datasets: [{ 
+            label: chartStrings.intensity, 
+            data: foragingIntensity,
+            backgroundColor: foragingIntensity.map(v => v > 70 ? '#22C55E' : v > 30 ? '#F59E0B' : '#EF4444'),
+            borderRadius: 4
+        }]
       },
       options: { 
         responsive: true, maintainAspectRatio: false,
-        plugins: { 
-            legend: { display: false },
-            annotation: {
-                annotations: {
-                    line1: {
-                        type: 'line',
-                        yMin: 20,
-                        yMax: 20,
-                        borderColor: 'rgba(239, 68, 68, 0.5)',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        label: {
-                            display: true,
-                            content: 'Max Flight',
-                            position: 'end'
-                        }
-                    }
-                }
-            }
-        },
-        scales: { y: { beginAtZero: true, title: { display: true, text: 'km/h' } } }
+        plugins: { legend: { display: false } },
+        scales: { 
+            y: { 
+                beginAtZero: true, 
+                max: 100,
+                title: { display: true, text: '%' } 
+            } 
+        }
       }
     });
 
@@ -356,7 +349,7 @@ const chartStrings = {
         labels: archiveLabels,
         datasets: [
           { type: 'bar', label: chartStrings.flightHours, data: flightHours, backgroundColor: '#FFBF00', order: 2 },
-          { type: 'line', label: chartStrings.dailyGDD, data: dailyGDD, borderColor: '#2D2D2D', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
+          { type: 'line', label: 'Daily GDD', data: dailyGDD, borderColor: '#2D2D2D', borderWidth: 4, yAxisID: 'y1', order: 1, tension: 0.4 }
         ]
       },
       options: { 
