@@ -378,90 +378,6 @@
     "foraging_intensity": 86.0
   },
   {
-    "timestamp": "2026-04-03T06:00:00",
-    "date": "2026-04-03",
-    "temp": 14.8,
-    "wind": 2.0,
-    "rain": 0.0,
-    "gdd_gain": 4.8,
-    "status": "Optimal",
-    "humidity": "60",
-    "pressure": "1026",
-    "rolling_gdd": 8.3,
-    "delta_t": 5.9,
-    "foraging_intensity": 92.0
-  },
-  {
-    "timestamp": "2026-04-03T09:00:00",
-    "date": "2026-04-03",
-    "temp": 18.5,
-    "wind": 7.0,
-    "rain": 0.0,
-    "gdd_gain": 8.5,
-    "status": "Optimal",
-    "humidity": "45",
-    "pressure": "1027",
-    "rolling_gdd": 8.8,
-    "delta_t": 10.2,
-    "foraging_intensity": 72.0
-  },
-  {
-    "timestamp": "2026-04-03T12:00:00",
-    "date": "2026-04-03",
-    "temp": 22.2,
-    "wind": 9.0,
-    "rain": 0.0,
-    "gdd_gain": 12.2,
-    "status": "Optimal",
-    "humidity": "35",
-    "pressure": "1028",
-    "rolling_gdd": 8.8,
-    "delta_t": 14.4,
-    "foraging_intensity": 64.0
-  },
-  {
-    "timestamp": "2026-04-03T15:00:00",
-    "date": "2026-04-03",
-    "temp": 23.8,
-    "wind": 6.0,
-    "rain": 0.0,
-    "gdd_gain": 13.8,
-    "status": "Optimal",
-    "humidity": "30",
-    "pressure": "1027",
-    "rolling_gdd": 9.3,
-    "delta_t": 16.7,
-    "foraging_intensity": 76.0
-  },
-  {
-    "timestamp": "2026-04-03T18:00:00",
-    "date": "2026-04-03",
-    "temp": 21.5,
-    "wind": 4.0,
-    "rain": 0.0,
-    "gdd_gain": 11.5,
-    "status": "Optimal",
-    "humidity": "35",
-    "pressure": "1028",
-    "rolling_gdd": 9.3,
-    "delta_t": 14.0,
-    "foraging_intensity": 84.0
-  },
-  {
-    "timestamp": "2026-04-03T21:00:00",
-    "date": "2026-04-03",
-    "temp": 18.2,
-    "wind": 2.0,
-    "rain": 0.0,
-    "gdd_gain": 8.2,
-    "status": "Optimal",
-    "humidity": "40",
-    "pressure": "1029",
-    "rolling_gdd": 9.3,
-    "delta_t": 10.9,
-    "foraging_intensity": 92.0
-  },
-  {
     "timestamp": "2026-04-03T05:52:33.359373",
     "date": "2026-04-03",
     "temp": 1.9,
@@ -474,6 +390,20 @@
     "rolling_gdd": 2.85,
     "delta_t": 0.7,
     "foraging_intensity": 0
+  },
+  {
+    "timestamp": "2026-04-03T06:00:00",
+    "date": "2026-04-03",
+    "temp": 14.8,
+    "wind": 2.0,
+    "rain": 0.0,
+    "gdd_gain": 4.8,
+    "status": "Optimal",
+    "humidity": "60",
+    "pressure": "1026",
+    "rolling_gdd": 8.3,
+    "delta_t": 5.9,
+    "foraging_intensity": 92.0
   },
   {
     "timestamp": "2026-04-03T08:36:30.514445",
@@ -490,6 +420,20 @@
     "foraging_intensity": 0
   },
   {
+    "timestamp": "2026-04-03T09:00:00",
+    "date": "2026-04-03",
+    "temp": 18.5,
+    "wind": 7.0,
+    "rain": 0.0,
+    "gdd_gain": 8.5,
+    "status": "Optimal",
+    "humidity": "45",
+    "pressure": "1027",
+    "rolling_gdd": 8.8,
+    "delta_t": 10.2,
+    "foraging_intensity": 72.0
+  },
+  {
     "timestamp": "2026-04-03T11:25:51.550190",
     "date": "2026-04-03",
     "temp": 12.5,
@@ -502,6 +446,20 @@
     "rolling_gdd": 2.85,
     "delta_t": 7.4,
     "foraging_intensity": 14.0
+  },
+  {
+    "timestamp": "2026-04-03T12:00:00",
+    "date": "2026-04-03",
+    "temp": 22.2,
+    "wind": 9.0,
+    "rain": 0.0,
+    "gdd_gain": 12.2,
+    "status": "Optimal",
+    "humidity": "35",
+    "pressure": "1028",
+    "rolling_gdd": 8.8,
+    "delta_t": 14.4,
+    "foraging_intensity": 64.0
   },
   {
     "timestamp": "2026-04-03T14:29:41.184675",
@@ -518,6 +476,20 @@
     "foraging_intensity": 14.0
   },
   {
+    "timestamp": "2026-04-03T15:00:00",
+    "date": "2026-04-03",
+    "temp": 23.8,
+    "wind": 6.0,
+    "rain": 0.0,
+    "gdd_gain": 13.8,
+    "status": "Optimal",
+    "humidity": "30",
+    "pressure": "1027",
+    "rolling_gdd": 9.3,
+    "delta_t": 16.7,
+    "foraging_intensity": 76.0
+  },
+  {
     "timestamp": "2026-04-03T17:02:03.179208",
     "date": "2026-04-03",
     "temp": 12.4,
@@ -532,6 +504,20 @@
     "foraging_intensity": 6.8
   },
   {
+    "timestamp": "2026-04-03T18:00:00",
+    "date": "2026-04-03",
+    "temp": 21.5,
+    "wind": 4.0,
+    "rain": 0.0,
+    "gdd_gain": 11.5,
+    "status": "Optimal",
+    "humidity": "35",
+    "pressure": "1028",
+    "rolling_gdd": 9.3,
+    "delta_t": 14.0,
+    "foraging_intensity": 84.0
+  },
+  {
     "timestamp": "2026-04-03T19:56:17.507012",
     "date": "2026-04-03",
     "temp": 8.8,
@@ -544,6 +530,20 @@
     "rolling_gdd": 2.85,
     "delta_t": 4.1,
     "foraging_intensity": 0
+  },
+  {
+    "timestamp": "2026-04-03T21:00:00",
+    "date": "2026-04-03",
+    "temp": 18.2,
+    "wind": 2.0,
+    "rain": 0.0,
+    "gdd_gain": 8.2,
+    "status": "Optimal",
+    "humidity": "40",
+    "pressure": "1029",
+    "rolling_gdd": 9.3,
+    "delta_t": 10.9,
+    "foraging_intensity": 92.0
   },
   {
     "timestamp": "2026-04-03T22:02:58.422142",
