@@ -1,6 +1,22 @@
 import json
 from datetime import datetime, timedelta
 
+def calculate_intensity(temp, wind, rain):
+    """Calculates Foraging Intensity Index (0-100%)."""
+    # 1. Base score from wind
+    score = 100 - (wind * 4)
+    score = max(0, min(100, score))
+    
+    # 2. Hard constraints
+    if rain > 0 or temp < 12:
+        return 0
+    
+    # 3. Efficiency penalty for cool weather
+    if temp < 14:
+        score *= 0.5
+        
+    return round(score, 1)
+
 def fix_data():
     with open('src/data/telemetry.json', 'r') as f:
         telemetry = json.load(f)
@@ -10,7 +26,7 @@ def fix_data():
 
     BASE_TEMP = 10.0
 
-    # 1. Update Telemetry with 3-tier status and rolling_gdd
+    # 1. Update Telemetry with 3-tier status, rolling_gdd, delta_t, and intensity
     for i in range(len(telemetry)):
         temp = float(telemetry[i]['temp'])
         humidity = float(telemetry[i]['humidity'])
@@ -27,6 +43,7 @@ def fix_data():
         
         telemetry[i]['status'] = status
         telemetry[i]['delta_t'] = round(temp * (1 - (humidity / 100)), 1)
+        telemetry[i]['foraging_intensity'] = calculate_intensity(temp, wind, rain)
 
         # Rolling GDD
         now_dt = datetime.fromisoformat(telemetry[i]['timestamp'].replace('Z', ''))

@@ -33,6 +33,22 @@ def load_json(path):
                 return []
     return []
 
+def calculate_intensity(temp, wind, rain):
+    """Calculates Foraging Intensity Index (0-100%)."""
+    # 1. Base score from wind
+    score = 100 - (wind * 4)
+    score = max(0, min(100, score))
+    
+    # 2. Hard constraints
+    if rain > 0 or temp < 12:
+        return 0
+    
+    # 3. Efficiency penalty for cool weather
+    if temp < 14:
+        score *= 0.5
+        
+    return round(score, 1)
+
 def update_stores():
     """Processing Layer: Handles business logic, rolling windows, and archiving."""
     raw_data = fetch_imgw_data()
@@ -56,6 +72,7 @@ def update_stores():
         status = "Marginal"
 
     delta_t = round(t_now * (1 - (humidity / 100)), 1)
+    intensity = calculate_intensity(t_now, wind_kmh, rain_mm)
 
     new_entry = {
         "timestamp": now_pl.isoformat(),
@@ -66,7 +83,8 @@ def update_stores():
         "status": status,
         "humidity": humidity,
         "pressure": pressure,
-        "delta_t": delta_t
+        "delta_t": delta_t,
+        "foraging_intensity": intensity
     }
 
     # 2. Load Existing Data
