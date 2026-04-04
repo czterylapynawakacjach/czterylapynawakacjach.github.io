@@ -314,7 +314,8 @@ const chartStrings = {
         datasets: [{ 
             label: chartStrings.intensity, 
             data: foragingIntensity,
-            backgroundColor: foragingIntensity.map(v => v > 70 ? '#22C55E' : v > 30 ? '#F59E0B' : '#EF4444'),
+            // Logic: 0 is always Red. > 70 is Green. Everything else is Amber.
+            backgroundColor: foragingIntensity.map(v => v === 0 ? '#EF4444' : v >= 70 ? '#22C55E' : '#FFBF00'),
             borderRadius: 4
         }]
       },

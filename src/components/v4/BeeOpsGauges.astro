@@ -20,11 +20,12 @@ const deltaTStatus = getDeltaTStatus(today.delta_t || 0);
 const getStatusColor = (status: string) => {
   if (status === 'Optimal') return 'text-green-500 border-green-500/20 bg-green-500/5';
   if (status === 'Restricted') return 'text-red-500 border-red-500/20 bg-red-500/5';
-  return 'text-amber-500 border-amber-500/20 bg-amber-500/5';
+  return 'text-amber border-amber/20 bg-amber/5';
 };
 
 const getStatusLabel = (status: string) => {
   if (status === 'Optimal') return t('v4.beeops.status.optimal');
+  if (status === 'Marginal') return t('v4.beeops.status.marginal');
   return t('v4.beeops.status.restricted');
 };
 ---
