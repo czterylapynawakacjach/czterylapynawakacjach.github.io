@@ -37,6 +37,7 @@ const pressures = displayTelemetry.map(m => parseInt(m.pressure.toString()));
 const rollingGDD = displayTelemetry.map(m => m.rolling_gdd || 0);
 const deltaTs = displayTelemetry.map(m => m.delta_t || 0);
 const foragingIntensity = displayTelemetry.map(m => m.foraging_intensity || 0);
+const foragingStatuses = displayTelemetry.map(m => m.status);
 
 // 3. Thermal Envelope (from displayed telemetry)
 const days = [...new Set(displayTelemetry.map(m => m.date))];
@@ -207,11 +208,18 @@ const chartStrings = {
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script is:inline src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, foragingIntensity, cumulativeGDD, dailyGDD, flightHours, ghostData, chartStrings }}>
+<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, foragingIntensity, foragingStatuses, cumulativeGDD, dailyGDD, flightHours, ghostData, chartStrings }}>
   document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.family = 'Inter';
     Chart.defaults.font.weight = '900';
     Chart.defaults.color = '#2D2D2D';
+
+    // Helper for status colors in charts
+    const getChartStatusColor = (status) => {
+      if (status === 'Optimal') return '#22C55E'; // Green
+      if (status === 'Marginal') return '#FFBF00'; // Amber
+      return '#EF4444'; // Red
+    };
 
     // Helper for scale styling
     const commonScales = {
@@ -339,8 +347,8 @@ const chartStrings = {
         labels: labels,
         datasets: [{ 
             label: chartStrings.intensity, 
-            data: foragingIntensity,
-            backgroundColor: foragingIntensity.map(v => v === 0 ? '#EF4444' : v >= 70 ? '#22C55E' : '#FFBF00'),
+            data: foragingIntensity.map(v => v === 0 ? 2 : v), // Tiny height for visibility
+            backgroundColor: foragingStatuses.map(s => getChartStatusColor(s)),
             borderRadius: 4
         }]
       },
