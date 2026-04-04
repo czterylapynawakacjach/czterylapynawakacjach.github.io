@@ -76,8 +76,8 @@ const showStarvationWarning = bloomStarted && recentFlightHours < 6;
 // 6. Foraging Timeline Colors
 const getStatusColor = (status: string) => {
   if (status === 'Optimal') return 'bg-green-500';
-  if (status === 'Marginal') return 'bg-amber-500';
-  return 'bg-red-500'; // Default for Restricted or any unknown state
+  if (status === 'Marginal') return 'bg-amber'; // Fixed: using custom 'amber' from tailwind.config.mjs
+  return 'bg-red-500'; 
 };
 
 // Translation Strings for Script
