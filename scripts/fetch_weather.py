@@ -48,6 +48,7 @@ def update_stores():
     humidity = float(raw_data['wilgotnosc_wzgledna'] or 0)
     
     is_flyable = t_now > 14 and wind_kmh < 20 and rain_mm == 0
+    delta_t = round(t_now * (1 - (humidity / 100)), 1)
 
     new_entry = {
         "timestamp": now_pl.isoformat(),
@@ -57,7 +58,8 @@ def update_stores():
         "rain": rain_mm,
         "status": "Optimal" if is_flyable else "Restricted",
         "humidity": humidity,
-        "pressure": pressure
+        "pressure": pressure,
+        "delta_t": delta_t
     }
 
     # 2. Load Existing Data

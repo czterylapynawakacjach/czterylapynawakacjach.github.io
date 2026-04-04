@@ -8,9 +8,15 @@ def fix_data():
     with open('src/data/archive.json', 'r') as f:
         archive = json.load(f)
 
-    # 1. Update Telemetry with rolling_gdd
+    # 1. Update Telemetry with rolling_gdd and delta_t
     BASE_TEMP = 10.0
     for i in range(len(telemetry)):
+        # Delta T Calculation
+        temp = float(telemetry[i]['temp'])
+        humidity = float(telemetry[i]['humidity'])
+        telemetry[i]['delta_t'] = round(temp * (1 - (humidity / 100)), 1)
+
+        # Rolling GDD
         now_dt = datetime.fromisoformat(telemetry[i]['timestamp'].replace('Z', ''))
         window_start = now_dt - timedelta(hours=24)
         

@@ -20,6 +20,7 @@ const rains = displayTelemetry.map(m => m.rain);
 const winds = displayTelemetry.map(m => m.wind);
 const pressures = displayTelemetry.map(m => parseInt(m.pressure));
 const rollingGDD = displayTelemetry.map(m => m.rolling_gdd || 0);
+const deltaTs = displayTelemetry.map(m => m.delta_t || 0);
 
 // 3. Thermal Envelope (from 7 days telemetry)
 const days = [...new Set(displayTelemetry.map(m => m.date))];
@@ -54,11 +55,12 @@ const chartStrings = {
   dailyMax: t('v4.beeops.charts.labels.daily_max'),
   dailyMin: t('v4.beeops.charts.labels.daily_min'),
   rain: t('v4.beeops.charts.labels.rain'),
-  rollingGDD: 'Rolling 24h GDD', // Could add to ui.ts if needed
+  rollingGDD: 'Rolling 24h GDD',
   windSpeed: t('v4.beeops.charts.labels.wind_speed'),
   pressure: t('v4.beeops.charts.labels.pressure'),
   currentYear: t('v4.beeops.charts.labels.current_year'),
   historicalGhost: t('v4.beeops.charts.labels.historical_ghost'),
+  deltaT: 'Delta T',
 };
 ---
 
@@ -81,7 +83,16 @@ const chartStrings = {
     <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.washout.desc')}</p>
   </div>
 
-  <!-- 3. Foraging Throughput -->
+  <!-- 3. Nectar Flow Window (Delta T) -->
+  <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+    <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.deltat.title')}</h3>
+    <div class="aspect-video w-full">
+      <canvas id="deltaTChart"></canvas>
+    </div>
+    <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.deltat.desc')}</p>
+  </div>
+
+  <!-- 4. Foraging Throughput -->
   <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
     <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
     <div class="aspect-video w-full">
@@ -90,7 +101,7 @@ const chartStrings = {
     <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
   </div>
 
-  <!-- 4. Barometric Panic -->
+  <!-- 5. Barometric Panic -->
   <div class="honey-card p-4 md:p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
     <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
     <div class="aspect-video w-full">
@@ -99,7 +110,7 @@ const chartStrings = {
     <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.panic.desc')}</p>
   </div>
 
-  <!-- 5. Cumulative GDD Comparison -->
+  <!-- 6. Cumulative GDD Comparison -->
   <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 relative group overflow-hidden">
     <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')} (14 Days)</h3>
     <div class="aspect-[21/9] w-full">
@@ -110,7 +121,8 @@ const chartStrings = {
 </div>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, cumulativeGDD, ghostData, chartStrings }}>
+<script is:inline src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<script is:inline define:vars={{ labels, archiveLabels, temps, envelopeMin, envelopeMax, rains, rollingGDD, winds, pressures, deltaTs, cumulativeGDD, ghostData, chartStrings }}>
   document.addEventListener('DOMContentLoaded', () => {
     Chart.defaults.font.family = 'Inter';
     Chart.defaults.font.weight = '900';
@@ -175,7 +187,47 @@ const chartStrings = {
       }
     });
 
-    // 3. Foraging Throughput
+    // 3. Delta T Chart
+    new Chart(document.getElementById('deltaTChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Delta T',
+          data: deltaTs,
+          borderColor: '#2D2D2D',
+          borderWidth: 3,
+          pointRadius: 0,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          annotation: {
+            annotations: {
+              box1: {
+                type: 'box',
+                yMin: 2,
+                yMax: 8,
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                borderColor: 'transparent',
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: '°C Delta T' }
+          }
+        }
+      }
+    });
+
+    // 4. Foraging Throughput
     new Chart(document.getElementById('windChart'), {
       type: 'bar',
       data: {
@@ -184,12 +236,31 @@ const chartStrings = {
       },
       options: { 
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { 
+            legend: { display: false },
+            annotation: {
+                annotations: {
+                    line1: {
+                        type: 'line',
+                        yMin: 20,
+                        yMax: 20,
+                        borderColor: 'rgba(239, 68, 68, 0.5)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                            display: true,
+                            content: 'Max Flight',
+                            position: 'end'
+                        }
+                    }
+                }
+            }
+        },
         scales: { y: { beginAtZero: true, title: { display: true, text: 'km/h' } } }
       }
     });
 
-    // 4. Barometric Panic
+    // 5. Barometric Panic
     new Chart(document.getElementById('pressureChart'), {
       type: 'line',
       data: {
@@ -206,7 +277,7 @@ const chartStrings = {
       }
     });
 
-    // 5. GDD Comparison
+    // 6. GDD Comparison
     new Chart(document.getElementById('gddChart'), {
       type: 'line',
       data: {
