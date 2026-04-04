@@ -8,7 +8,13 @@ const t = useTranslations(lang);
 
 // 1. Display Windows
 const displayTelemetry = telemetry.slice(-56); // Last 7 days
-const displayTimeline = telemetry.slice(-16);  // Last 48 hours
+// Filter for 3-hour interval "clean" samples to avoid irregular gaps in the timeline ribbon
+const displayTimeline = telemetry
+  .filter(m => {
+    const hours = new Date(m.timestamp).getHours();
+    return hours % 3 === 0;
+  })
+  .slice(-16);  // Last 48 hours (16 * 3h = 48h)
 const displayArchive = archive.slice(-14);     // Last 14 days
 
 // Prepare Day Boundaries for Timeline

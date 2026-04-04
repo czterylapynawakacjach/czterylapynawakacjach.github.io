@@ -51,12 +51,16 @@ def calculate_intensity(temp, wind, rain):
 
 def update_stores():
     """Processing Layer: Handles business logic, rolling windows, and archiving."""
+    now_pl = datetime.now(POLAND_TZ).replace(tzinfo=None) # Use naive for JSON compatibility
+    
+    # Only capture on 3-hour intervals (0, 3, 6, 9, 12, 15, 18, 21)
+    if now_pl.hour % 3 != 0:
+        print(f"Skipping update at {now_pl.hour}:00. Only capturing on 3-hour intervals.")
+        return
+
     raw_data = fetch_imgw_data()
     if not raw_data:
         return
-
-    # 1. Standardize Inputs & Logic
-    now_pl = datetime.now(POLAND_TZ).replace(tzinfo=None) # Use naive for JSON compatibility
     t_now = float(raw_data['temperatura'])
     wind_kmh = round(float(raw_data['predkosc_wiatru']) * 3.6, 1)
     rain_mm = float(raw_data['suma_opadu'] or 0)
