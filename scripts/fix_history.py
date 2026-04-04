@@ -27,11 +27,20 @@ def fix_data():
     BASE_TEMP = 10.0
 
     # 1. Update Telemetry with 3-tier status, rolling_gdd, delta_t, and intensity
+    # AND ensure all numeric types are floats/ints
     for i in range(len(telemetry)):
         temp = float(telemetry[i]['temp'])
         humidity = float(telemetry[i]['humidity'])
         wind = float(telemetry[i]['wind'])
         rain = float(telemetry[i]['rain'])
+        pressure = float(telemetry[i]['pressure'])
+        
+        # Overwrite with clean types
+        telemetry[i]['temp'] = temp
+        telemetry[i]['humidity'] = humidity
+        telemetry[i]['wind'] = wind
+        telemetry[i]['rain'] = rain
+        telemetry[i]['pressure'] = pressure
         
         # 3-Tier Status Logic
         if rain > 0 or temp < 10:
@@ -51,8 +60,8 @@ def fix_data():
         window = [t for t in telemetry[:i+1] if datetime.fromisoformat(t['timestamp'].replace('Z', '')) >= window_start]
         
         if window:
-            r_max = max(t['temp'] for t in window)
-            r_min = min(t['temp'] for t in window)
+            r_max = max(float(t['temp']) for t in window)
+            r_min = min(float(t['temp']) for t in window)
             telemetry[i]['rolling_gdd'] = round(max(((r_max + r_min) / 2) - BASE_TEMP, 0), 2)
         else:
             telemetry[i]['rolling_gdd'] = 0
@@ -65,9 +74,8 @@ def fix_data():
         if day_data:
             optimal_slots = sum(1 for t in day_data if t['status'] == "Optimal")
             archive[i]['flight_hours'] = optimal_slots * 3
-            archive[i]['avg_delta_t'] = round(sum(t.get('delta_t', 0) for t in day_data) / len(day_data), 1)
+            archive[i]['avg_delta_t'] = round(sum(float(t.get('delta_t', 0)) for t in day_data) / len(day_data), 1)
         else:
-            # Fallback for days not in telemetry but in archive
             if 'flight_hours' not in archive[i]:
                 archive[i]['flight_hours'] = 0
             if 'avg_delta_t' not in archive[i]:

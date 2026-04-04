@@ -97,11 +97,11 @@ def update_stores():
         yesterday_data = [i for i in telemetry if i['date'] == yesterday_date]
         
         if yesterday_data:
-            t_max = max(i['temp'] for i in yesterday_data)
-            t_min = min(i['temp'] for i in yesterday_data)
-            avg_p = sum(i['pressure'] for i in yesterday_data) / len(yesterday_data)
-            avg_h = sum(i['humidity'] for i in yesterday_data) / len(yesterday_data)
-            total_r = sum(i['rain'] for i in yesterday_data)
+            t_max = max(float(i['temp']) for i in yesterday_data)
+            t_min = min(float(i['temp']) for i in yesterday_data)
+            avg_p = sum(float(i['pressure']) for i in yesterday_data) / len(yesterday_data)
+            avg_h = sum(float(i['humidity']) for i in yesterday_data) / len(yesterday_data)
+            total_r = sum(float(i['rain']) for i in yesterday_data)
             
             daily_gdd = max(((t_max + t_min) / 2) - BASE_TEMP, 0)
             last_cumulative = archive[-1]['cumulative_gdd'] if archive else 0
@@ -120,7 +120,7 @@ def update_stores():
                 "daily_gdd": round(daily_gdd, 2),
                 "cumulative_gdd": round(last_cumulative + daily_gdd, 2),
                 "flight_hours": flight_hours,
-                "avg_delta_t": round(sum(i.get('delta_t', 0) for i in yesterday_data) / len(yesterday_data), 1)
+                "avg_delta_t": round(sum(float(i.get('delta_t', 0)) for i in yesterday_data) / len(yesterday_data), 1)
             })
             
             if len(archive) > MAX_ARCHIVE:
