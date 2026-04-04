@@ -82,11 +82,11 @@ const siteTitle = title ? `${title} | ${t('v4.site.title')}` : t('v4.site.title'
   }
 
   .honey-card {
-    @apply bg-white rounded-[2rem] border-4 border-charcoal shadow-[8px_8px_0px_0px_rgba(45,45,45,1)] transition-all;
+    @apply bg-white rounded-[2rem] border-4 border-charcoal shadow-[4px_4px_0px_0px_rgba(45,45,45,1)] md:shadow-[8px_8px_0px_0px_rgba(45,45,45,1)] transition-all;
   }
 
   .honey-card:hover {
-    @apply -translate-x-1 -translate-y-1 shadow-[12px_12px_0px_0px_rgba(45,45,45,1)];
+    @apply -translate-x-1 -translate-y-1 shadow-[6px_6px_0px_0px_rgba(45,45,45,1)] md:shadow-[12px_12px_0px_0px_rgba(45,45,45,1)];
   }
 
   @keyframes spring-in {
