@@ -77,7 +77,7 @@ const showStarvationWarning = bloomStarted && recentFlightHours < 6;
 const getStatusColor = (status: string) => {
   if (status === 'Optimal') return 'bg-green-500';
   if (status === 'Marginal') return 'bg-amber-500';
-  return 'bg-red-500';
+  return 'bg-red-500'; // Default for Restricted or any unknown state
 };
 
 // Translation Strings for Script
