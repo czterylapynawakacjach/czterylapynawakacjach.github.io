@@ -48,7 +48,11 @@ const getStatusLabel = (status: string) => {
     <div class="flex justify-between items-start mb-8">
       <div>
         <h3 class="text-xs font-black tracking-[0.3em] uppercase mb-2">{t('v4.beeops.metrics.foraging')}</h3>
-        <p class="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase">{getStatusLabel(today.status)}</p>
+        <p class="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase mb-2">{getStatusLabel(today.status)}</p>
+        <div class="flex gap-4 text-xs font-bold uppercase tracking-widest opacity-60">
+          <span>{today.temp}°C</span>
+          <span>{today.wind} km/h</span>
+        </div>
       </div>
       <div class="w-16 h-16 rounded-full bg-current opacity-10 flex items-center justify-center text-3xl group-hover:animate-pulse">🐝</div>
     </div>

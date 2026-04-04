@@ -12,7 +12,6 @@ const displayTimeline = telemetry.slice(-16);
 const displayArchiveRaw = [...archive];     
 
 // --- LOGIC: Include "Today" (Partial Data) in Archive Charts ---
-// Use the date from the latest telemetry entry instead of system time to avoid TZ issues
 const latestEntry = telemetry[telemetry.length - 1];
 const todayDate = latestEntry?.date;
 const todayTelemetry = telemetry.filter(m => m.date === todayDate);
@@ -24,12 +23,11 @@ if (todayTelemetry.length > 0 && !displayArchiveRaw.find(a => a.date === todayDa
     const avg_h = todayTelemetry.reduce((acc, m) => acc + m.humidity, 0) / todayTelemetry.length;
     const total_r = todayTelemetry.reduce((acc, m) => acc + m.rain, 0);
     
-    // Use the latest rolling GDD as an approximation for partial day gain
     const latestGDD = todayTelemetry[todayTelemetry.length - 1].rolling_gdd || 0;
     const lastCumulative = archive[archive.length - 1]?.cumulative_gdd || 0;
     
     const optimal_slots = todayTelemetry.filter(m => m.status === "Optimal").length;
-    const flight_hours = optimal_slots * (24 / 8); // Normalized to 3h intervals
+    const flight_hours = optimal_slots * (24 / 8); 
 
     displayArchiveRaw.push({
         date: todayDate,
@@ -45,7 +43,7 @@ if (todayTelemetry.length > 0 && !displayArchiveRaw.find(a => a.date === todayDa
     });
 }
 
-const displayArchive = displayArchiveRaw.slice(-14); // Last 14 days including partial today
+const displayArchive = displayArchiveRaw.slice(-14); 
 
 // Prepare Day Boundaries for Timeline
 const timelineDays = [];
@@ -61,7 +59,7 @@ displayTimeline.forEach((m, i) => {
   }
 });
 
-// 2. Prepare data for Intra-day Charts (last 7 days of telemetry points)
+// 2. Prepare data for Intra-day Charts
 const labels = displayTelemetry.map(m => new Date(m.timestamp).toLocaleString(lang === 'pl' ? 'pl-PL' : 'en-US', { 
   month: 'short', day: 'numeric', hour: '2-digit' 
 }));
@@ -75,7 +73,7 @@ const deltaTs = displayTelemetry.map(m => m.delta_t || 0);
 const foragingIntensity = displayTelemetry.map(m => m.foraging_intensity || 0);
 const foragingStatuses = displayTelemetry.map(m => m.status);
 
-// 3. Thermal Envelope (from displayed telemetry)
+// 3. Thermal Envelope
 const telemetryDays = [...new Set(displayTelemetry.map(m => m.date))];
 const dailyMinMax = telemetryDays.map(day => {
     const dayTemps = displayTelemetry.filter(m => m.date === day).map(m => m.temp);
@@ -89,7 +87,7 @@ const dailyMinMax = telemetryDays.map(day => {
 const envelopeMin = displayTelemetry.map(m => dailyMinMax.find(d => d.date === m.date).min);
 const envelopeMax = displayTelemetry.map(m => dailyMinMax.find(d => d.date === m.date).max);
 
-// 4. Cumulative GDD & Flight Hours (from last 14 days archive)
+// 4. Archive Data
 const archiveLabels = displayArchive.map(a => new Date(a.date).toLocaleDateString(lang === 'pl' ? 'pl-PL' : 'en-US', {
     month: 'short', day: 'numeric'
 }));
@@ -97,27 +95,25 @@ const cumulativeGDD = displayArchive.map(a => a.cumulative_gdd);
 const dailyGDD = displayArchive.map(a => a.daily_gdd);
 const flightHours = displayArchive.map(a => a.flight_hours || 0);
 
-// Prepare "Ghost" GDD (Historical simulation - 15% slower)
 const ghostData = displayArchive.map(a => roundToTwo(a.cumulative_gdd * 0.85));
 
 function roundToTwo(num: number) {
     return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-// 5. Starvation Alert Logic
+// 5. Starvation Alert
 const recentArchive = archive.slice(-3);
 const recentFlightHours = recentArchive.reduce((acc, curr) => acc + (curr.flight_hours || 0), 0);
 const bloomStarted = archive[archive.length - 1]?.cumulative_gdd > 10;
 const showStarvationWarning = bloomStarted && recentFlightHours < 6;
 
-// 6. Foraging Timeline Colors
 const getStatusColor = (status: string) => {
   if (status === 'Optimal') return 'bg-green-500';
-  if (status === 'Marginal') return 'bg-amber'; // Custom amber
+  if (status === 'Marginal') return 'bg-amber'; 
   return 'bg-red-500'; 
 };
 
-// Translation Strings for Script
+// Translation Strings
 const chartStrings = {
   currentTemp: t('v4.beeops.charts.labels.current_temp'),
   dailyMax: t('v4.beeops.charts.labels.daily_max'),
@@ -162,7 +158,6 @@ const chartStrings = {
           </div>
         ))}
       </div>
-      <!-- Day Boundaries -->
       <div class="relative h-8 mt-2">
         {timelineDays.map((day) => (
           <div 
@@ -204,7 +199,16 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.deltat.desc')}</p>
     </div>
 
-    <!-- 4. Foraging Intensity Index (FIXED) -->
+    <!-- 4. Wind History -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.wind.title')}</h3>
+      <div class="aspect-video w-full">
+        <canvas id="windChart"></canvas>
+      </div>
+      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.wind.desc')}</p>
+    </div>
+
+    <!-- 5. Foraging Intensity Index -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
       <div class="aspect-video w-full">
@@ -213,7 +217,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
     </div>
 
-    <!-- 5. Barometric Panic -->
+    <!-- 6. Barometric Panic -->
     <div class="honey-card p-4 md:p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
       <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
       <div class="aspect-video w-full">
@@ -222,7 +226,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.panic.desc')}</p>
     </div>
 
-    <!-- 6. Seasonal GDD "Ghost" -->
+    <!-- 7. Seasonal GDD "Ghost" -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')} (14 Days)</h3>
       <div class="aspect-video w-full">
@@ -231,7 +235,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center italic">{t('v4.beeops.charts.gdd.desc')}</p>
     </div>
 
-    <!-- 7. Flight Hours vs GDD (Archive View) -->
+    <!-- 8. Flight Hours vs GDD (Archive View) -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.foraging.hours.title')} vs Daily GDD</h3>
       <div class="aspect-[21/9] w-full">
@@ -250,17 +254,15 @@ const chartStrings = {
     Chart.defaults.font.weight = '900';
     Chart.defaults.color = '#2D2D2D';
 
-    // Helper for status colors in charts
     const getChartStatusColor = (status) => {
-      if (status === 'Optimal') return '#22C55E'; // Green
-      if (status === 'Marginal') return '#FFBF00'; // Amber
-      return '#EF4444'; // Red
+      if (status === 'Optimal') return '#22C55E'; 
+      if (status === 'Marginal') return '#FFBF00'; 
+      return '#EF4444'; 
     };
 
-    // Helper for scale styling
     const commonScales = {
         x: {
-            display: true, // ENSURE VISIBLE
+            display: true, 
             grid: { display: false },
             ticks: {
                 maxRotation: 45,
@@ -377,14 +379,47 @@ const chartStrings = {
       }
     });
 
-    // 4. Foraging Intensity Index (FIXED)
+    // 4. Wind History
+    new Chart(document.getElementById('windChart'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{ label: chartStrings.windSpeed, data: winds, backgroundColor: '#2D2D2D' }]
+      },
+      options: { 
+        responsive: true, maintainAspectRatio: false,
+        plugins: { 
+            legend: { display: false },
+            annotation: {
+                annotations: {
+                    line1: {
+                        type: 'line',
+                        yMin: 20,
+                        yMax: 20,
+                        borderColor: 'rgba(239, 68, 68, 0.5)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: {
+                            display: true,
+                            content: 'Max Flight',
+                            position: 'end'
+                        }
+                    }
+                }
+            }
+        },
+        scales: { ...commonScales, y: { beginAtZero: true, title: { display: true, text: 'km/h' } } }
+      }
+    });
+
+    // 5. Foraging Intensity Index
     new Chart(document.getElementById('intensityChart'), {
       type: 'bar',
       data: {
         labels: labels,
         datasets: [{ 
             label: chartStrings.intensity, 
-            data: foragingIntensity.map(v => v === 0 ? 2 : v), // Tiny height for visibility
+            data: foragingIntensity.map(v => v === 0 ? 2 : v), 
             backgroundColor: foragingStatuses.map(s => getChartStatusColor(s)),
             borderRadius: 4
         }]
@@ -403,7 +438,7 @@ const chartStrings = {
       }
     });
 
-    // 5. Barometric Panic
+    // 6. Barometric Panic
     new Chart(document.getElementById('pressureChart'), {
       type: 'line',
       data: {
@@ -413,14 +448,14 @@ const chartStrings = {
       options: { 
         responsive: true, maintainAspectRatio: false, 
         scales: { 
-            x: { ...commonScales.x }, // ENABLE X AXIS
+            x: { ...commonScales.x },
             y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#FFBF00' }, title: { display: true, text: 'hPa', color: '#FFBF00' } } 
         },
         plugins: { legend: { display: false } }
       }
     });
 
-    // 6. GDD Comparison
+    // 7. GDD Comparison
     new Chart(document.getElementById('gddChart'), {
       type: 'line',
       data: {
@@ -438,7 +473,7 @@ const chartStrings = {
       }
     });
 
-    // 7. Flight Hours vs Daily GDD
+    // 8. Flight Hours vs Daily GDD
     new Chart(document.getElementById('flightGddChart'), {
       data: {
         labels: archiveLabels,
