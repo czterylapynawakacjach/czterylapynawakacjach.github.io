@@ -172,10 +172,10 @@ const chartStrings = {
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-    <!-- 1. Thermal Envelope -->
-    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
+    <!-- 1. Thermal Envelope & Wind -->
+    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden lg:col-span-2">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.thermal.title')}</h3>
-      <div class="aspect-video w-full">
+      <div class="aspect-[21/9] w-full">
         <canvas id="thermalChart"></canvas>
       </div>
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.thermal.desc')}</p>
@@ -199,16 +199,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.deltat.desc')}</p>
     </div>
 
-    <!-- 4. Wind History -->
-    <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
-      <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.wind.title')}</h3>
-      <div class="aspect-video w-full">
-        <canvas id="windChart"></canvas>
-      </div>
-      <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.wind.desc')}</p>
-    </div>
-
-    <!-- 5. Foraging Intensity Index -->
+    <!-- 4. Foraging Intensity Index -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic">{t('v4.beeops.charts.foraging.title')}</h3>
       <div class="aspect-video w-full">
@@ -217,7 +208,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.foraging.desc')}</p>
     </div>
 
-    <!-- 6. Barometric Panic -->
+    <!-- 5. Barometric Panic -->
     <div class="honey-card p-4 md:p-8 bg-charcoal border-4 border-amber relative group overflow-hidden">
       <h3 class="text-xl font-black text-amber mb-6 uppercase italic">{t('v4.beeops.charts.panic.title')}</h3>
       <div class="aspect-video w-full">
@@ -226,7 +217,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-white/20 uppercase tracking-widest leading-tight">{t('v4.beeops.charts.panic.desc')}</p>
     </div>
 
-    <!-- 7. Seasonal GDD "Ghost" -->
+    <!-- 6. Seasonal GDD "Ghost" -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal relative group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.charts.gdd.title')} (14 Days)</h3>
       <div class="aspect-video w-full">
@@ -235,7 +226,7 @@ const chartStrings = {
       <p class="mt-6 text-xs font-bold text-charcoal/40 uppercase tracking-widest leading-tight text-center italic">{t('v4.beeops.charts.gdd.desc')}</p>
     </div>
 
-    <!-- 8. Flight Hours vs GDD (Archive View) -->
+    <!-- 7. Flight Hours vs GDD (Archive View) -->
     <div class="honey-card p-4 md:p-8 bg-white border-4 border-charcoal lg:col-span-2 group overflow-hidden">
       <h3 class="text-xl font-black text-charcoal mb-6 uppercase italic text-center">{t('v4.beeops.foraging.hours.title')} vs Daily GDD</h3>
       <div class="aspect-[21/9] w-full">
@@ -273,13 +264,13 @@ const chartStrings = {
         }
     };
 
-    // 1. Thermal Envelope
+    // 1. Thermal Envelope & Wind
     new Chart(document.getElementById('thermalChart'), {
-      type: 'line',
       data: {
         labels: labels,
         datasets: [
           {
+            type: 'line',
             label: chartStrings.currentTemp,
             data: temps,
             borderColor: '#FFBF00',
@@ -287,25 +278,41 @@ const chartStrings = {
             borderWidth: 4,
             pointRadius: 0,
             tension: 0.4,
-            zIndex: 2
+            yAxisID: 'y',
+            zIndex: 10
           },
           {
+            type: 'line',
+            label: 'Wind km/h',
+            data: winds,
+            borderColor: '#3B82F6',
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+            yAxisID: 'y1',
+            zIndex: 5
+          },
+          {
+            type: 'line',
             label: chartStrings.dailyMax,
             data: envelopeMax,
-            borderColor: 'rgba(0,0,0,0.05)',
-            backgroundColor: 'rgba(0,0,0,0.05)',
+            borderColor: 'rgba(0,0,0,0.03)',
+            backgroundColor: 'rgba(0,0,0,0.03)',
             fill: '+1',
             pointRadius: 0,
             borderWidth: 1,
+            yAxisID: 'y',
             zIndex: 1
           },
           {
+            type: 'line',
             label: chartStrings.dailyMin,
             data: envelopeMin,
             borderColor: 'transparent',
             backgroundColor: 'transparent',
             pointRadius: 0,
             fill: false,
+            yAxisID: 'y',
             zIndex: 1
           }
         ]
@@ -313,8 +320,49 @@ const chartStrings = {
       options: { 
         responsive: true, 
         maintainAspectRatio: false, 
-        scales: { ...commonScales, y: { beginAtZero: false } }, 
-        plugins: { legend: { display: false } } 
+        interaction: { mode: 'index', intersect: false },
+        scales: { 
+            x: commonScales.x,
+            y: { 
+                type: 'linear', 
+                position: 'left',
+                beginAtZero: false, 
+                title: { display: true, text: '°C' } 
+            },
+            y1: {
+                type: 'linear',
+                position: 'right',
+                beginAtZero: true,
+                title: { display: true, text: 'km/h' },
+                grid: { drawOnChartArea: false }
+            }
+        }, 
+        plugins: { 
+            legend: { display: false },
+            annotation: {
+                annotations: {
+                    tempFloor: {
+                        type: 'line',
+                        yMin: 14,
+                        yMax: 14,
+                        borderColor: 'rgba(212, 175, 55, 0.4)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: { display: true, content: '14°C Activity Floor', position: 'start', font: { size: 10 } }
+                    },
+                    windLimit: {
+                        type: 'line',
+                        yScaleID: 'y1',
+                        yMin: 20,
+                        yMax: 20,
+                        borderColor: 'rgba(59, 130, 246, 0.4)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        label: { display: true, content: '20 km/h Limit', position: 'end', font: { size: 10 } }
+                    }
+                }
+            }
+        } 
       }
     });
 
@@ -379,23 +427,7 @@ const chartStrings = {
       }
     });
 
-    // 4. Wind History
-    new Chart(document.getElementById('windChart'), {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{ label: chartStrings.windSpeed, data: winds, backgroundColor: '#2D2D2D' }]
-      },
-      options: { 
-        responsive: true, maintainAspectRatio: false,
-        plugins: { 
-            legend: { display: false }
-        },
-        scales: { ...commonScales, y: { beginAtZero: true, title: { display: true, text: 'km/h' } } }
-      }
-    });
-
-    // 5. Foraging Intensity Index
+    // 4. Foraging Intensity Index
     new Chart(document.getElementById('intensityChart'), {
       type: 'bar',
       data: {
@@ -421,7 +453,7 @@ const chartStrings = {
       }
     });
 
-    // 6. Barometric Panic
+    // 5. Barometric Panic
     new Chart(document.getElementById('pressureChart'), {
       type: 'line',
       data: {
@@ -438,7 +470,7 @@ const chartStrings = {
       }
     });
 
-    // 7. GDD Comparison
+    // 6. GDD Comparison
     new Chart(document.getElementById('gddChart'), {
       type: 'line',
       data: {
@@ -456,7 +488,7 @@ const chartStrings = {
       }
     });
 
-    // 8. Flight Hours vs Daily GDD
+    // 7. Flight Hours vs Daily GDD
     new Chart(document.getElementById('flightGddChart'), {
       data: {
         labels: archiveLabels,
