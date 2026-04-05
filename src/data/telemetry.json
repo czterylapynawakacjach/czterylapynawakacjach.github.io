@@ -766,5 +766,19 @@
     "delta_t": 6.0,
     "foraging_intensity": 0,
     "rolling_gdd": 1.2
+  },
+  {
+    "timestamp": "2026-04-05T21:00:00",
+    "date": "2026-04-05",
+    "hour": 21,
+    "temp": 9.6,
+    "wind": 14.4,
+    "rain": 0.01,
+    "status": "Restricted",
+    "humidity": 78.6,
+    "pressure": 1014.6,
+    "delta_t": 2.1,
+    "foraging_intensity": 0,
+    "rolling_gdd": 1.2
   }
 ]
