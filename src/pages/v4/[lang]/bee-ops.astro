@@ -2,6 +2,7 @@
 import Layout from '../../../layouts/v4/Layout.astro';
 import BeeOpsGauges from '../../../components/v4/BeeOpsGauges.astro';
 import BeeOpsCharts from '../../../components/v4/BeeOpsCharts.astro';
+import DailyBuzz from '../../../components/v4/DailyBuzz.astro';
 import metrics from '../../../data/telemetry.json';
 import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../../i18n/utils';
 import { languages } from '../../../i18n/ui';
@@ -57,6 +58,8 @@ const formattedTime = lastUpdate
       <div class="mt-12">
         <BeeOpsCharts />
       </div>
+
+      <DailyBuzz />
 
       <!-- Informational Footer -->
       <div class="mt-32 honey-card p-8 bg-charcoal text-white/40 text-[0.6rem] font-black tracking-widest uppercase text-center border-none shadow-none">
