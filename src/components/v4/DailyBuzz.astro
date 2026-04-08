@@ -5,12 +5,14 @@ import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-// Sort news by category (Local first) then potentially by date if needed
-const sortedNews = [...news].sort((a, b) => {
-  if (a.category === 'Local' && b.category === 'Global') return -1;
-  if (a.category === 'Global' && b.category === 'Local') return 1;
-  return 0;
-});
+// Hierarchy: 
+// 1. Most recent Local item becomes "Feature Tile" (2x2)
+// 2. Others follow as Standard Tiles (1x1)
+const localNews = news.filter(item => item.category === 'Local');
+const globalNews = news.filter(item => item.category === 'Global');
+
+const featureItem = localNews[0] || globalNews[0];
+const remainingNews = news.filter(item => item !== featureItem).slice(0, 8);
 ---
 
 <div class="mt-24">
@@ -19,45 +21,85 @@ const sortedNews = [...news].sort((a, b) => {
     <p class="text-xl text-charcoal/60 font-bold italic border-l-4 border-amber pl-6">{t('v4.beeops.news.subtitle')}</p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    {sortedNews.map((item) => (
-      <div class={`honey-card p-8 flex flex-col justify-between group relative overflow-hidden ${item.category === 'Local' ? 'bg-white border-amber' : 'bg-charcoal text-white border-charcoal'}`}>
-        <div>
-          <!-- Category Tag -->
-          <div class="flex justify-between items-start mb-6">
-            <span class={`px-3 py-1 rounded-full text-[0.6rem] font-black tracking-widest uppercase ${item.category === 'Local' ? 'bg-amber text-charcoal' : 'bg-white/10 text-amber'}`}>
-              {item.category === 'Local' ? t('v4.beeops.news.category.local') : t('v4.beeops.news.category.global')}
-            </span>
-            <span class={`text-[0.6rem] font-bold uppercase tracking-widest ${item.category === 'Local' ? 'text-charcoal/40' : 'text-white/40'}`}>
-              {item.source}
-            </span>
+  {/* Desktop Bento Grid / Mobile Stack Deck */}
+  <div class="flex md:grid md:grid-cols-3 lg:grid-cols-4 md:grid-flow-row-dense gap-6 overflow-x-auto md:overflow-visible pb-12 md:pb-0 snap-x snap-mandatory no-scrollbar">
+    
+    {/* Feature Tile (Local Priority) */}
+    {featureItem && (
+      <div class="min-w-[85vw] md:min-w-0 md:col-span-2 md:row-span-2 snap-center">
+        <div class="honey-card p-10 h-full flex flex-col justify-between group relative overflow-hidden bg-white/70 backdrop-blur-xl border border-white/20 hover:shadow-[0_0_30px_rgba(251,191,36,0.3)] transition-all">
+          <div>
+            <div class="flex justify-between items-start mb-8">
+              <span class="px-4 py-1.5 rounded-full bg-amber text-charcoal text-[0.7rem] font-black tracking-widest uppercase">
+                {featureItem.category === 'Local' ? t('v4.beeops.news.category.local') : t('v4.beeops.news.category.global')}
+              </span>
+              <span class="text-[0.7rem] font-bold uppercase tracking-widest text-charcoal/40">
+                {featureItem.source}
+              </span>
+            </div>
+
+            <h3 class="text-3xl md:text-4xl font-black mb-6 uppercase tracking-tighter leading-none text-charcoal group-hover:text-amber-600 transition-colors">
+              {featureItem.title}
+            </h3>
+            
+            {featureItem.summary && (
+              <p class="text-lg font-bold leading-tight text-charcoal/60 mb-12 max-w-xl">
+                {featureItem.summary}
+              </p>
+            )}
           </div>
 
-          <h3 class={`text-xl font-black mb-4 uppercase tracking-tighter leading-tight group-hover:text-amber transition-colors ${item.category === 'Local' ? 'text-charcoal' : 'text-white'}`}>
-            {item.title}
-          </h3>
-          
-          {item.summary && (
-            <p class={`text-sm font-bold leading-snug mb-8 ${item.category === 'Local' ? 'text-charcoal/60' : 'text-white/60'}`}>
-              {item.summary}
-            </p>
-          )}
+          <a 
+            href={featureItem.link} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-3 text-xs font-black tracking-[0.3em] uppercase text-charcoal hover:gap-6 transition-all"
+          >
+            {t('v4.beeops.news.read_more')} <span class="text-amber">→</span>
+          </a>
+
+          {/* Background Decor */}
+          <div class="absolute -bottom-8 -right-8 text-9xl opacity-[0.03] group-hover:scale-110 transition-transform pointer-events-none">
+            {featureItem.category === 'Local' ? '📍' : '🌍'}
+          </div>
         </div>
+      </div>
+    )}
 
-        <a 
-          href={item.link} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class={`inline-flex items-center gap-2 text-[0.6rem] font-black tracking-[0.2em] uppercase transition-all hover:gap-4 ${item.category === 'Local' ? 'text-charcoal' : 'text-amber'}`}
-        >
-          {t('v4.beeops.news.read_more')} <span>→</span>
-        </a>
+    {/* Standard Tiles */}
+    {remainingNews.map((item) => (
+      <div class="min-w-[70vw] md:min-w-0 snap-center">
+        <div class="honey-card p-6 h-full flex flex-col justify-between group relative overflow-hidden bg-white/40 backdrop-blur-md border border-white/20 hover:shadow-[0_0_20px_rgba(251,191,36,0.2)] transition-all">
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <span class={`text-[0.6rem] font-black tracking-widest uppercase ${item.category === 'Local' ? 'text-amber-600' : 'text-charcoal/40'}`}>
+                {item.category === 'Local' ? t('v4.beeops.news.category.local') : t('v4.beeops.news.category.global')}
+              </span>
+              <span class="text-[0.5rem] font-bold uppercase tracking-widest text-charcoal/30">
+                {item.source}
+              </span>
+            </div>
 
-        <!-- Background Decor for Local -->
-        {item.category === 'Local' && (
-          <div class="absolute -bottom-4 -right-4 text-6xl opacity-5 group-hover:scale-110 transition-transform pointer-events-none">📍</div>
-        )}
+            <h3 class="text-base font-black mb-4 uppercase tracking-tighter leading-tight text-charcoal group-hover:text-amber-600 transition-colors line-clamp-3">
+              {item.title}
+            </h3>
+          </div>
+
+          <a 
+            href={item.link} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-[0.6rem] font-black tracking-[0.2em] uppercase text-charcoal/60 hover:text-charcoal transition-all"
+          >
+            {t('v4.beeops.news.read_more')} <span class="text-amber">→</span>
+          </a>
+        </div>
       </div>
     ))}
   </div>
 </div>
+
+<style>
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
