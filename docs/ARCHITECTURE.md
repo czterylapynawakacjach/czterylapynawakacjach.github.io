@@ -1,55 +1,78 @@
-# Technical Architecture: The "Pet-Diary" App (GCP)
+# Technical Architecture: The Golden Apiary & Pet Hotel
 
-This diagram outlines the Serverless Google Cloud architecture used to manage bookings, securely store pet data, and deliver the "Curated Daily Diary" (photos/videos) to owners.
+This document outlines the high-performance, 100% static architecture used to deliver live beekeeping telemetry and a multi-version design portfolio.
 
 ```mermaid
 graph TD
-    %% Users
-    Client("Pet Owner\n(Web/Mobile App)")
-    Admin("Family/Staff\n(Admin Mobile App)")
+    %% External Data Sources
+    IMGW("IMGW-PIB\n(Weather API)")
+    RSS("RSS Feeds\n(Bee Journals)")
+    GNews("Google News\n(Local Alerts)")
 
-    %% Frontend Hosting
-    FirebaseHosting("Firebase Hosting\n(React/Flutter Web)")
-
-    %% API & Compute
-    subgraph Google Cloud Platform
-        CloudRun("Cloud Run\n(Node.js / Go API)")
-        Auth("Firebase Auth\n(Identity)")
-        
-        %% Databases
-        Firestore("Cloud Firestore\n(NoSQL)")
-        CloudStorage("Cloud Storage\n(Media: Photos/Videos)")
-        
-        %% Background Processing
-        PubSub("Cloud Pub/Sub\n(Event Bus)")
-        CloudFunctions("Cloud Functions\n(Background Tasks)")
+    %% Automation Layer (GitHub Actions)
+    subgraph GitHub_Actions [Automation & ETL]
+        WeatherSync("Weather Sync\n(Every 3h)")
+        NewsSync("News Sync\n(Daily)")
+        AstroBuild("Astro Static Build")
     end
 
-    %% External Services
-    Stripe("Payment Gateway\n(Stripe / Przelewy24)")
-    Push("Firebase Cloud Messaging\n(Push Notifications)")
+    %% Data Layer
+    subgraph Data_Storage [Static Data Layer]
+        TelemetryJSON("telemetry.json\n(30-day High-Res)")
+        ArchiveJSON("archive.json\n(2-year Seasonal)")
+        NewsJSON("news.json\n(Aggregated Feed)")
+    end
 
-    %% Connections - Client Side
-    Client -->|Logs in| Auth
-    Client -->|Loads App| FirebaseHosting
-    Client -->|Books Stay / Views Diary| CloudRun
-    Client -->|Downloads Photos| CloudStorage
+    %% Frontend Layer
+    subgraph Frontend [Astro SSG]
+        V1_V3("V1-V3 Portfolios\n(Clean / Forest / Artistic)")
+        V4("V4 Golden Apiary\n(Live Dashboard)")
+        Charts("Chart.js\n(Beekeeping Metrics)")
+    end
 
-    %% Connections - Admin Side
-    Admin -->|Uploads Daily Photos| CloudStorage
-    Admin -->|Logs Activity / Status| CloudRun
+    %% Hosting
+    GH_Pages("GitHub Pages\n(Static Hosting)")
 
-    %% Connections - Backend Logic
-    CloudRun -->|Reads/Writes Profiles & Bookings| Firestore
-    CloudRun -->|Initiates Payment| Stripe
-    CloudStorage -->|Triggers Resize/Thumbnail Event| PubSub
-    PubSub --> CloudFunctions
-    CloudFunctions -->|Updates DB with Image URL| Firestore
-    CloudFunctions -->|Sends 'New Photo!' Alert| Push
-    Push -.-> Client
+    %% Flows
+    IMGW -->|JSON| WeatherSync
+    RSS -->|XML| NewsSync
+    GNews -->|XML| NewsSync
+    
+    WeatherSync -->|Python ETL| TelemetryJSON
+    WeatherSync -->|Midnight Rollover| ArchiveJSON
+    NewsSync -->|Python Aggregator| NewsJSON
+    
+    TelemetryJSON --> AstroBuild
+    ArchiveJSON --> AstroBuild
+    NewsJSON --> AstroBuild
+    
+    AstroBuild -->|Build Artifacts| GH_Pages
+    
+    GH_Pages -->|Delivers| Frontend
 ```
 
-### Key Components:
-1. **Firestore:** Stores structured data (Pet Profiles, Vaccination expiries, Booking dates, "Diary" text entries).
-2. **Cloud Storage:** Stores the high-res photos and videos taken by the family.
-3. **Cloud Functions:** Triggers automatically when a new photo is uploaded, creates a thumbnail, and sends a Push Notification to the owner's phone saying "Fido is having a great time! Tap to see today's photo."
+### 1. The Data Pipeline (ETL)
+The application uses a **"Static-Dynamic"** pattern. While the site is 100% static, it is rebuilt frequently to reflect fresh data.
+- **Weather ETL (`fetch_weather.py`):** Fetches data from IMGW-PIB every 3 hours. It calculates specialized beekeeping metrics like **GDD (Growing Degree Days)** and **Delta T (Nectar Flow Index)**.
+- **News Aggregator (`fetch_news.py`):** Runs daily to pull the latest industry updates and hyper-local alerts for the Wołomin area.
+- **Midnight Rollover:** The system automatically summarizes hourly telemetry into daily historical records in `archive.json`.
+
+### 2. Multi-Version Design Core
+The project serves four distinct design identities from a single codebase:
+- **V1 (Professional):** Trust-focused, clean layout.
+- **V2 (Forest Boutique):** Luxury aesthetic with organic elements.
+- **V3 (Experimental):** Broken grids and cinematic interactions.
+- **V4 (Golden Apiary):** High-utility beekeeping dashboard with physics-based UI elements.
+
+### 3. Beekeeping Intelligence (V4)
+The V4 dashboard implements specific biological logic:
+- **Foraging Window:** Logic-driven status (Optimal/Marginal/Restricted) based on temperature, wind (>20 km/h), and precipitation.
+- **Thermal Envelope:** Comparative visualization of current temp vs. 24h rolling min/max.
+- **Nectar Washout:** Tracking rainfall impact on nectar availability (48h recovery logic).
+
+### 4. Technical Stack
+- **Framework:** Astro (Static Site Generation)
+- **Styling:** Tailwind CSS (Utility-first)
+- **Visuals:** Chart.js (Telemetry), Mermaid.js (Architecture Diagrams)
+- **Hosting:** GitHub Pages
+- **Interactivity:** Vanilla JS (Magnetic physics, bee-cursor)
