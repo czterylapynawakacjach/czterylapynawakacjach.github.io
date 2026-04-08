@@ -16,8 +16,8 @@ const translatePath = useTranslatedPath(lang, 'v4');
 <Layout>
   <!-- Hero Section -->
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-amber pt-20">
-    <div class="absolute inset-0 z-0 opacity-10">
-      <div class="hex-grid absolute -top-20 -left-20 rotate-12">
+    <div class="absolute inset-0 z-0 opacity-10 pointer-events-none overflow-hidden">
+      <div class="hex-grid absolute -top-20 -left-20 rotate-12 w-full max-w-[1200px]">
         {Array.from({ length: 50 }).map(() => <div class="hex"></div>)}
       </div>
     </div>

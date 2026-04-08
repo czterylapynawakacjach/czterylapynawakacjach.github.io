@@ -25,32 +25,36 @@ const events = [
       <p class="text-xl text-charcoal/60 font-bold max-w-xl italic border-l-4 border-amber pl-6">{t('v4.calendar.subtitle')}</p>
     </div>
 
-    <!-- Horizontal Scroll Timeline -->
+    <!-- Vertical Timeline -->
     <div class="relative">
-      <div class="absolute top-1/2 left-0 w-full h-1 bg-charcoal/5 -translate-y-1/2 z-0"></div>
+      <!-- Vertical line decor -->
+      <div class="absolute top-0 left-8 md:left-1/2 w-1 h-full bg-charcoal/5 -translate-x-1/2 z-0 hidden md:block"></div>
       
-      <div class="flex gap-12 px-6 pb-20 overflow-x-auto no-scrollbar relative z-10 cursor-none">
+      <div class="flex flex-col gap-16 px-6 relative z-10 max-w-4xl mx-auto">
         {events.map((event, i) => (
-          <div class="min-w-[400px] group">
-            <div class="text-[0.6rem] font-black tracking-[0.4em] text-amber mb-12 uppercase">{event.month}</div>
+          <div class={`flex flex-col md:flex-row gap-8 items-start ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+            <!-- Month Label -->
+            <div class="md:w-1/2 flex md:justify-center">
+               <div class="text-[0.6rem] font-black tracking-[0.4em] text-amber uppercase bg-charcoal/5 px-4 py-2 rounded-full">{event.month}</div>
+            </div>
             
-            <div class="honey-card p-12 relative group-hover:-translate-y-4 transition-all duration-500 bg-white border-4 border-charcoal">
-              <div class="text-6xl mb-8 group-hover:scale-125 transition-transform duration-500 origin-left">{event.icon}</div>
-              <h3 class="text-3xl font-black text-charcoal mb-6 uppercase tracking-tighter">{event.title}</h3>
-              <p class="text-charcoal/60 font-bold leading-relaxed">{event.desc}</p>
-              
-              <!-- Pollen Burst Placeholder -->
-              <div class="absolute -top-4 -right-4 w-12 h-12 bg-amber rounded-full flex items-center justify-center text-xl opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 shadow-xl">✨</div>
+            <!-- Card -->
+            <div class="md:w-1/2 w-full">
+              <div class="honey-card p-8 md:p-12 relative group hover:-translate-y-2 transition-all duration-500 bg-white border-4 border-charcoal">
+                <div class="text-6xl mb-8 group-hover:scale-125 transition-transform duration-500 origin-left">{event.icon}</div>
+                <h3 class="text-2xl md:text-3xl font-black text-charcoal mb-6 uppercase tracking-tighter leading-none">{event.title}</h3>
+                <p class="text-charcoal/60 font-bold leading-relaxed">{event.desc}</p>
+                
+                <!-- Pollen Burst Placeholder -->
+                <div class="absolute -top-4 -right-4 w-12 h-12 bg-amber rounded-full flex items-center justify-center text-xl opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 shadow-xl">✨</div>
+              </div>
             </div>
           </div>
         ))}
       </div>
     </div>
 
-    <!-- Scroll Hint -->
-    <div class="mt-20 text-center animate-bounce">
-      <span class="text-[0.6rem] font-black tracking-[0.5em] text-charcoal/20 uppercase">{t('v4.calendar.scroll')}</span>
-    </div>
+    <div class="mt-40"></div>
   </section>
 </Layout>
 
